@@ -1,7 +1,20 @@
 # JGM-automator
 > 原 <家国梦> [JGM-automator ](https://github.com/Jiahonzheng/JGM-Automator "<JGM-automator>")自动化脚本的改写
+
+## 计划
+-[ ] 转换配置文件
+-[ ] 改写CV文件
+-[ ] 改写基本功能
+-[ ] ORC识别
+-[ ] 智能升级
+-[ ] 自动换建筑
+-[ ] 自动开地图
+-[ ] 自动开红包
+-[ ] 自动完成任务
+
 ## 功能
-- 自动收金币
+-[ ] 自动收金币
+-[ ] 自动收货
 
 ## 安装与运行
 
@@ -14,7 +27,12 @@ brew cask install android-platform-tools
 ### Windows
 - [Python3.7.4](https://www.python.org/downloads/release/python-374/)
 - ADB 请将本项目下adb文件夹路径添加到环境变量的 `Path`
-
+- [tesseract](https://github.com/tesseract-ocr/tesseract/wiki/4.0-with-LSTM#400-alpha-for-windows)
+- 出现Emulator-5554输入一下找到5554+1(5555)端口的pid 结束进程
+```powershell
+netstat –ano
+kill pid 
+```
 ### 安装python的库
 ```bash
 python -m pip install -r requirements.txt
