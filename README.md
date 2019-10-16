@@ -73,5 +73,8 @@ python main.py
 
 + 能动就说明能成功运行，接下来你可以退出脚本(`Ctrl`+`C` 或者 关掉终端窗口)，在 `main.py` 中修改你的配置。
 
+### IOS屏幕比例信息
 <img src="https://github.com/openatx/facebook-wda/raw/master/images/ios-display.png" style="zoom:40%" />
+
+## Log
 

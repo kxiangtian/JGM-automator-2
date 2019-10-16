@@ -17,7 +17,9 @@ class Devices:
 		# Determine ScreenSize and Set Position
 		self._ScreenSize = self.get_screen_size()
 		self._position = Assign_Position(self._ScreenSize)
-		
+	
+	def session(self):
+		return self._s
 
 	def IOS(self):
 		return self._devicetype

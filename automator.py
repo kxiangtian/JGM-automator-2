@@ -6,22 +6,23 @@ import random
 
 
 
-
 class Automator:
+
     #def __init__(self, device: str, upgrade_list: list, harvest_filter:list, auto_task = False, auto_policy = True, speedup = True):
     def __init__(self, d: Devices):
         """
         device: 如果是 USB 连接，则为 adb devices 的返回结果；如果是模拟器，则为模拟器的控制 URL 。
         """
-        self.d = u2.connect(device)
-        self.upgrade_list = upgrade_list
-        self.harvest_filter = harvest_filter
+        print("-"*20 + "Android Init" + "-"*20)
+        self.d = u2.connect(d.device())
         self.dWidth, self.dHeight = self.d.window_size()
         print(self.dWidth, self.dHeight)
-        self.appRunning = False
-        self.auto_task = auto_task
-        self.auto_policy = auto_policy
-        self.loot_speedup = speedup
+        #self.upgrade_list = upgrade_list
+        #self.harvest_filter = harvest_filter
+        #self.appRunning = False
+        #self.auto_task = auto_task
+        #self.auto_policy = auto_policy
+        #self.loot_speedup = speedup
         
     def start(self):
         """
