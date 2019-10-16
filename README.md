@@ -20,9 +20,12 @@
 
 ### Mac
 ```bash
+brew update
 brew install python3
 brew install tesseract
 brew cask install android-platform-tools
+brew install --HEAD usbmuxd
+brew install --HEAD libimobiledevice
 ```
 ### Windows
 - [Python3.7.4](https://www.python.org/downloads/release/python-374/)
@@ -33,6 +36,13 @@ brew cask install android-platform-tools
 netstat –ano
 kill pid 
 ```
+
+### IOS + MacOS
+####环境安装
+
+- 使用真机调试 WDA，参考 iOS 真机如何安装 [WebDriverAgent · TesterHome](https://testerhome.com/topics/7220)
+- 安装 [openatx/facebook-wda](https://github.com/openatx/facebook-wda)
+
 ### 安装python的库
 ```bash
 python -m pip install -r requirements.txt
@@ -52,7 +62,7 @@ python -m uiautomator2 init
 ```
 - 在手机上打开 ATX ，点击 `启动 UIAutomator` 选项，确保 UIAutomator 是运行的。如果是 MuMu 模拟器，长时间不运行的话，再次运行前也需要重新打开ATX(小黄车)。
 
-+ 如何运行这个脚本:
+### 如何运行这个脚本:
 ```bash
 # 在该项目的文件夹根目录打开
 python main.py

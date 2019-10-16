@@ -4,3 +4,4 @@ uiautomator2
 imutils
 pillow
 pytesseract
+wda

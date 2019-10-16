@@ -7,6 +7,10 @@ class Devices:
 		self._MuMu   = config["MuMu"]
 		self._ScreenSize = Scale(get_screen_size())
 		self._position = Assign_Position(self._ScreenSize)
+		self._devicetype = config["IOS"]
+
+	def IOS(self):
+		return self._devicetype
 
 	def position(self):
 		return self._position
