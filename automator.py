@@ -254,8 +254,8 @@ class Automator:
                 for i in range(3):
                     sx, sy = self.pos[i + 1]
                     ex, ey = self.pos[i + 7]
-                    n = random.randfloat(-0.003,0.003)
-                    print(sx, sy,ex, ey,sx-0.1, sy+0.05)
+                    n = random.uniform(-0.003,0.003)
+                    #Pout(sx, sy,ex, ey,sx-n, sy+n)
                     self.d.swipe(sx - n , sy + n, ex, ey)
 
         except(Exception):
