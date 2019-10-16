@@ -243,16 +243,21 @@ class Automator:
     """
     def swipe(self):
         try:
-            msg("滑动收集金币")
-            for i in range(3):
-                if 1 == random.randint(0,1):
+            if 1 == random.randint(0,1):
+                msg("横向滑动收集金币")
+                for i in range(3):
                     sx, sy = self.pos[i * 3 + 1]
                     ex, ey = self.pos[i * 3 + 3]
-                else:
-                    sx, sy = self._get_position(i + 1)
-                    ex, ey = self._get_position(i + 7)
-                n = random.randint(-5,5)
-                self.d.swipe(sx , sy + n, ex , ey + n)
+                    self.d.swipe(sx-0.1, sy+0.05, ex, ey)
+            else:
+                msg("竖向滑动收集金币")
+                for i in range(3):
+                    sx, sy = self.pos[i + 1]
+                    ex, ey = self.pos[i + 7]
+                    n = random.randfloat(-0.003,0.003)
+                    print(sx, sy,ex, ey,sx-0.1, sy+0.05)
+                    self.d.swipe(sx - n , sy + n, ex, ey)
+
         except(Exception):
             # 用户在操作手机，暂停10秒
             s(10)
