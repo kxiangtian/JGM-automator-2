@@ -6,6 +6,7 @@ wda.DEBUG = False # default False
 
 class Devices:
 	def __init__(self, config):
+		# Set for Android or Emulator
 		self._device = config["Deivce"]
 		self._MuMu   = config["MuMu"]
 
@@ -14,10 +15,14 @@ class Devices:
 		self._IP = config["IP"]
 		self._s = self.Set_IOS()
 
-		# Determine ScreenSize and Set Position
+		# Determine ScreenSize
 		self._ScreenSize = self.get_screen_size()
+
+		# 游戏配置 Configuration
 		self._position = Assign_Position(self._ScreenSize)
 	
+		
+		
 	def session(self):
 		return self._s
 
