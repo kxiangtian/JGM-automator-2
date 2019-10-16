@@ -27,6 +27,8 @@ CROSS_POSITIONS = { 1: (0.632, 0.878),
 
 
 
+def msg(message):
+    print("[%s]"%time.asctime(),message)
 
 # customer print for debug
 def Pout(*args):

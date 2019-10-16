@@ -21,6 +21,7 @@ class Devices:
 
 		# 游戏配置 Configuration
 		self._position = Assign_Position(self._ScreenSize)
+		
 		# Automatic upgrade by calculation | disable uBL uBlL
 		self._aU = config["Auto_Upgrade"] 
 		self._aT = config["Auto_task"]
@@ -134,7 +135,7 @@ def Assign_Position(Ss):
 	else:
 		print("没有找到对应屏比对应位置")
 		sys.exit()
-		return BUILDING_POSITIONS
+	return BUILDING_POSITIONS	
 
 # get Scale of Screen
 def Scale(Ss):

@@ -17,6 +17,9 @@ class Automator:
         self.dWidth, self.dHeight = self.d.window_size()
         print("(",self.dWidth,"x",self.dHeight,")")
 
+        self.pos = d.pos()
+        print("建筑位置")
+        print_d(self.pos)
         # auto_task = False
         self.auto_task = d.aT()
         print("自动任务",self.auto_task)
@@ -102,27 +105,12 @@ class Automator:
         building,count = random.choice(upgrade_list)
         self._upgrade_one_with_count(building,count) 
         self._close_upgrade_interface()
-    
-    def swipe(self):
-        """
-        滑动屏幕，收割金币。
-        """
-        try:
-            # print("[%s] Swiped."%time.asctime())
-            for i in range(3):
-                # 横向滑动，共 3 次。
-                sx, sy = BUILDING_POSITIONS[i * 3 + 1]
-                ex, ey = BUILDING_POSITIONS[i * 3 + 3]
-                self.d.swipe(sx-0.1, sy+0.05, ex, ey)
-        except(Exception):
-            # 用户在操作手机，暂停10秒
-            time.sleep(10)
 
     def harvest(self,building_filter,goods:list):
         '''
         新的傻瓜搬货物方法,先按住截图判断绿光探测货物目的地,再搬
         '''
-        short_wait()
+        s()
         for good in goods:
             pos_id = self.guess_good(good)
             if pos_id != 0 and pos_id in building_filter:
@@ -246,3 +234,25 @@ class Automator:
         for i in range(3):
             self.d.click(0.057, 0.919)
             s()
+
+    """
+    随机概率滑动模式，滑动屏幕，收割金币。
+    Simulate swipe, (Android === IOS)
+    swipe(x1, y1, x2, y2, 0.5) # 0.5s(IOS, Android? )
+    swipe(0.5, 0.5, 0.5, 1.0)  # swipe middle to bottom
+    """
+    def swipe(self):
+        try:
+            msg("滑动收集金币")
+            for i in range(3):
+                if 1 == random.randint(0,1):
+                    sx, sy = self.pos[i * 3 + 1]
+                    ex, ey = self.pos[i * 3 + 3]
+                else:
+                    sx, sy = self._get_position(i + 1)
+                    ex, ey = self._get_position(i + 7)
+                n = random.randint(-5,5)
+                self.d.swipe(sx , sy + n, ex , ey + n)
+        except(Exception):
+            # 用户在操作手机，暂停10秒
+            s(10)
