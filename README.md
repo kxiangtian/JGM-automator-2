@@ -65,10 +65,13 @@ python -m uiautomator2 init
 
 ### 如何运行这个脚本:
 ```bash
+# IOS 可以用下面的映射USB端口
+iproxy 8100 8100
 # 在该项目的文件夹根目录打开
 python main.py
 ```
 
 + 能动就说明能成功运行，接下来你可以退出脚本(`Ctrl`+`C` 或者 关掉终端窗口)，在 `main.py` 中修改你的配置。
 
+<img src="https://github.com/openatx/facebook-wda/raw/master/images/ios-display.png" style="zoom:40%" />
 

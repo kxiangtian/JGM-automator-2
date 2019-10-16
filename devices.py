@@ -1,13 +1,21 @@
 import sys
+import wda
 from util import *
+
+wda.DEBUG = False # default False
 
 class Devices:
 	def __init__(self, config):
 		self._device = config["Deivce"]
 		self._MuMu   = config["MuMu"]
-		self._devicetype = config["IOS"]
 
-		self._ScreenSize = Scale(get_screen_size(self._devicetype))
+		# Set for IOS
+		self._devicetype = config["IOS"]
+		self._IP = config["IP"]
+		self._s = self.Set_IOS()
+
+		# Determine ScreenSize and Set Position
+		self._ScreenSize = self.get_screen_size()
 		self._position = Assign_Position(self._ScreenSize)
 		
 
@@ -23,9 +31,35 @@ class Devices:
 	def MuMu(self):
 		return self._MuMu
 
+	def Set_IOS(self):
+		if self.IOS():
+			screenshot_backup_dir = 'screenshot_backups/'
+			if not os.path.isdir(screenshot_backup_dir):
+				os.mkdir(screenshot_backup_dir)
+			self._c = wda.Client('http://' + self._IP + ':8100/')
+			return self._c.session()
+
+	# get screen size
+	def get_screen_size(self):
+		if not self.IOS():
+			size_str = os.popen('adb shell wm size').read()
+			if not size_str:
+				print('请安装 ADB 及驱动并配置环境变量')
+				sys.exit()
+				m = re.search(r'(\d+)x(\d+)', size_str)
+				if m:
+					return Scale((m.group(2),m.group(1)))
+		            #return "{height}x{width}".format(height=m.group(2), width=m.group(1))
+				return Scale((1920,1080))
+		else:
+		    # TODO get IOS size later
+		    Pout("IOS - UIKit Size: ", self._s.window_size())
+		    return self._s.scale
+
 def Assign_Position(Ss):
 	# 各号建筑的位置
-	Pout("分辨率",Ss)
+	Pout("屏幕比例:",Ss,Ss == 3,"\nIphone X,Xs,8P,7P,6sP,6P"
+		,Ss == 2,"\nIphone 8,7,6s,6,SE")
 	BUILDING_POSITIONS = dict()
 	if Ss == "16.0:9":
 		BUILDING_POSITIONS = {
@@ -51,6 +85,15 @@ def Assign_Position(Ss):
 		8: (595/1080, 795/2248),
 		9: (787/1080, 681/2248)
 		}
+
+	elif Ss == 3:
+		BUILDING_POSITIONS = {
+
+		}
+	elif Ss == 2:
+		BUILDING_POSITIONS = {
+
+		}
 	else:
 		print("没有找到对应屏比对应位置")
 		sys.exit()
@@ -60,19 +103,5 @@ def Assign_Position(Ss):
 def Scale(Ss):
 	return "{:0.1f}:{:0.0f}".format(int(Ss[0])/120,int(Ss[1])/120)
 
-# get screen size
-def get_screen_size(IOS):
-	if not IOS:
-		size_str = os.popen('adb shell wm size').read()
-		if not size_str:
-			print('请安装 ADB 及驱动并配置环境变量')
-			sys.exit()
-			m = re.search(r'(\d+)x(\d+)', size_str)
-			if m:
-				return (m.group(2),m.group(1))
-	            #return "{height}x{width}".format(height=m.group(2), width=m.group(1))
-			return (1920,1080)
-	else:
-	    # TODO get IOS size later
-	    print("IOS Screen Size")
-	    return (1920,1080)
+
+

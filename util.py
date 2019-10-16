@@ -32,11 +32,18 @@ CROSS_POSITIONS = { 1: (0.632, 0.878),
 def Pout(*args):
     if DEBUG:
         print("\nDebug" + ">"*45 )
-        for r in args:
-            if type(r) is dict:
-                print_d(r)
+        skip = False
+        for i in range(len(args)):
+            if type(args[i]) is dict:
+                print_d(args[i])
+            elif type(args[i]) is bool:
+                if not args[i]:
+                    skip = True
+            elif skip:
+                skip = False
+                continue;
             else:
-                print(r,end = " ")
+                print(args[i],end = " ")
         print()
         print("<"*50)
 
