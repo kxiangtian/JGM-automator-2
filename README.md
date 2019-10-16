@@ -56,6 +56,10 @@ adb connect 127.0.0.1:7555
 - 获取 device 名称 填写至config.json. 如果是 MuMu 模拟器在Main 部分 MUMU为 True
 ```bash
 adb devices
+"""
+device: 如果是 USB 连接，则为 adb devices 的返回结果；
+如果是模拟器，则为模拟器的控制 URL 。
+"""
 ```
 - 在已完成 adb 连接后，在手机安装 ATX 应用。
 ```bash

@@ -1,5 +1,6 @@
 import sys
 import wda
+import re
 from util import *
 
 wda.DEBUG = False # default False
@@ -20,17 +21,46 @@ class Devices:
 
 		# 游戏配置 Configuration
 		self._position = Assign_Position(self._ScreenSize)
-	
-		
-		
+		# Automatic upgrade by calculation | disable uBL uBlL
+		self._aU = config["Auto_Upgrade"] 
+		self._aT = config["Auto_task"]
+		self._aP = config["Auto_policy"]
+		self._aR = config["Auto_redpacket"] 
+		self._aPz = config["Auto_puzzle"] 
+
+		self._uBL = config["Upgrade_Building"] #empty for all
+		self._uBlL= config["Upgrade_Building_Level"] #empty for each once
+		self._hFL = config["Harvest_filter"] #len(0) = everything
+
+	def hFL(self):
+		return self._hFL
+
+	def aU(self):
+		if self._aU:
+			return True
+		else:
+			return (self._uBL,self._uBlL)
+
+	def aPz(self):
+		return self._aPz
+
+	def aR(self):
+		return self._aR
+
+	def aP(self):
+		return self._aP
+
+	def aT(self):
+		return self._aT
+
+	def pos(self):
+		return self._position
+
 	def session(self):
 		return self._s
 
 	def IOS(self):
 		return self._devicetype
-
-	def position(self):
-		return self._position
 
 	def device(self):
 		return self._device
@@ -53,11 +83,11 @@ class Devices:
 			if not size_str:
 				print('请安装 ADB 及驱动并配置环境变量')
 				sys.exit()
-				m = re.search(r'(\d+)x(\d+)', size_str)
-				if m:
-					return Scale((m.group(2),m.group(1)))
-		            #return "{height}x{width}".format(height=m.group(2), width=m.group(1))
-				return Scale((1920,1080))
+			m = re.search(r'(\d+)x(\d+)', size_str)
+			if m:
+				return Scale((m.group(2),m.group(1)))
+		        #return "{height}x{width}".format(height=m.group(2), width=m.group(1))
+			return Scale((1920,1080))
 		else:
 		    # TODO get IOS size later
 		    Pout("IOS - UIKit Size: ", self._s.window_size())

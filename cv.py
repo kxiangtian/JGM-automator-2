@@ -68,10 +68,10 @@ class UIMatcher:
         img2 = cv2.GaussianBlur(img2, (5, 5), 0)
         # 找轮廓
         cnts = cv2.findContours(img2, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-        if len(cnts[1]):
-            return True
-        else:
+        if cnts == None :#len(cnts[1]) True
             return False
+        else:
+            return True
 
     @staticmethod
     def findGreenLight(diff_screens, th=100):

@@ -2,42 +2,61 @@ from cv import UIMatcher
 from util import *
 from devices import *
 import uiautomator2 as u2
+import wda
 import random
 
 
 
 class Automator:
-
-    #def __init__(self, device: str, upgrade_list: list, harvest_filter:list, auto_task = False, auto_policy = True, speedup = True):
     def __init__(self, d: Devices):
-        """
-        device: 如果是 USB 连接，则为 adb devices 的返回结果；如果是模拟器，则为模拟器的控制 URL 。
-        """
-        print("-"*20 + "Android Init" + "-"*20)
-        self.d = u2.connect(d.device())
+        print("-"*20 + "Automator Init" + "-"*20)
+        if d.IOS():
+            self.d = d.session()
+        else:
+            self.d = u2.connect(d.device())
         self.dWidth, self.dHeight = self.d.window_size()
-        print(self.dWidth, self.dHeight)
-        #self.upgrade_list = upgrade_list
-        #self.harvest_filter = harvest_filter
-        #self.appRunning = False
-        #self.auto_task = auto_task
-        #self.auto_policy = auto_policy
-        #self.loot_speedup = speedup
-        
+        print("(",self.dWidth,"x",self.dHeight,")")
+
+        # auto_task = False
+        self.auto_task = d.aT()
+        print("自动任务",self.auto_task)
+
+        # auto_policy = True
+        self.auto_policy = d.aP()
+        print("自动升级政策",self.auto_policy)
+
+        # upgrade_list: list
+        self.upgrade_list = [] if d.aU() == True else d.aU()[0]
+        print("升级列表", self.upgrade_list)
+
+        # harvest_filter:list
+        self.harvest_filter = d.hFL()
+        print("收割过滤",self.harvest_filter)
+
+        self.appRunning = False
+        print("程序运行",self.appRunning)
+
+        # speedup = True
+        self.loot_speedup = False
+        print("物资加速",self.loot_speedup)
+
+        print("-"*55)
+
     def start(self):
         """
         启动脚本，请确保已进入游戏页面。
         """
+        d = self.d
         while True:
             # 判断jgm进程是否在前台, 最多等待20秒，否则唤醒到前台
-            if self.d.app_wait("com.tencent.jgm", front=True,timeout=20):
+            if d.app_wait("com.tencent.jgm", front=True,timeout=20):
                 if not self.appRunning:
                     # 从后台换到前台，留一点反应时间
                     print("App is front. JGM agent start in 5 seconds")
                     time.sleep(5) 
                 self.appRunning = True
             else:
-                self.d.app_start("com.tencent.jgm")
+                d.app_start("com.tencent.jgm")
                 self.appRunning = False
                 continue
             
@@ -71,7 +90,7 @@ class Automator:
 
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
-            self.d.click(550/1080, 1650/1920)
+            d.click(550/1080, 1650/1920)
             self.upgrade(self.upgrade_list)
             # 滑动屏幕，收割金币。
             self.swipe()
@@ -109,7 +128,7 @@ class Automator:
             if pos_id != 0 and pos_id in building_filter:
                 # 搬5次
                 self._move_good_by_id(good, BUILDING_POSITIONS[pos_id], times=4)
-                short_wait()
+                s()
       
     def guess_good(self, good_id):
         '''
@@ -145,7 +164,7 @@ class Automator:
         if len(UIMatcher.findGreenArrow(self.d.screenshot(format="opencv"))):
             # 打开政策中心
             self.d.click(0.206, 0.097)
-            mid_wait()
+            ms()
             # 确认升级
             self.d.click(0.077, 0.122)
             # 拉到顶
@@ -157,7 +176,7 @@ class Automator:
                 if len(arrows):
                     x,y = arrows[0]
                     self.d.click(x,y) # 点击这个政策
-                    short_wait()
+                    s()
                     self.d.click(0.511, 0.614) # 确认升级
                     print("[%s] Policy upgraded.    ++++++"%time.asctime())
                     self._back_to_main()
@@ -174,7 +193,7 @@ class Automator:
         screen = self.d.screenshot(format="opencv")
         if UIMatcher.findTaskBubble(screen):
             self.d.click(0.16, 0.84) # 打开城市任务
-            short_wait()
+            s()
             self.d.click(0.51, 0.819) # 点击 完成任务
             print("[%s] Task finished.    ++++++"%time.asctime())
             self._back_to_main()
@@ -207,7 +226,7 @@ class Automator:
             ex, ey = source
             for i in range(times):
                 self.d.drag(sx, sy, ex, ey, duration = 0.1)
-                short_wait()
+                s()
         except(Exception):
             pass    
 
@@ -221,9 +240,9 @@ class Automator:
     def _slide_to_top(self):
         for i in range(3):
             self.d.swipe(0.488, 0.302,0.482, 0.822)
-            short_wait()
+            s()
 
     def _back_to_main(self):
         for i in range(3):
             self.d.click(0.057, 0.919)
-            short_wait()
+            s()

@@ -55,8 +55,8 @@ def print_d(res):
         print(key,":",res[key])
 
 # Sleep function that make program sleep by different times
-def s(time = 0.1):
-    time.sleep(time)
+def s(times = 0.1):
+    time.sleep(times)
 
 def ms():
     time.sleep(0.5)

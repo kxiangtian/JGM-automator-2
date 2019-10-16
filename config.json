@@ -1,20 +1,25 @@
 {
-    
-    "要升级的建筑物":[1,2,3],
-
-    "对应升级次数":[1,1,1],
-
-    "要收货的建筑物":[1,2,3],
-
-    "自动完成任务":false,
-
-    "自动升级政策":true,
-
     "Deivce": "665c4235",
     
-    "IOS"	: true,
+    "IOS"	: false,
 
     "IP"	: "localhost",
+
+    "Auto_Upgrade" : false,
+
+    "Auto_task":true,
+
+    "Auto_policy":true,
+
+    "Auto_redpacket" : false,
+
+    "Auto_puzzle" : false,
+
+    "Upgrade_Building":[1,2,3],
+
+    "Upgrade_Building_Level":[1,1,1],
+
+    "Harvest_filter":[1,2,3],
 
     "MuMu"	:"127.0.0.1:7555"
 
