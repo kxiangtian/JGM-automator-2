@@ -1,7 +1,7 @@
 {
     "Deivce": "665c4235",
     
-    "IOS"	: true,
+    "IOS"	: false,
 
     "IP"	: "localhost",
 
@@ -19,8 +19,6 @@
 
     "Upgrade_Building_Level":[1,1,1,1,1,1,1,1,1],
 
-    "Harvest_filter":[1,2,3],
-
-    "MuMu"	:"127.0.0.1:7555"
+    "Harvest_filter":[1,2,3]
 
 }

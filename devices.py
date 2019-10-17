@@ -9,7 +9,6 @@ class Devices:
 	def __init__(self, config):
 		# Set for Android or Emulator
 		self._device = config["Deivce"]
-		self._MuMu   = config["MuMu"]
 
 		# Set for IOS
 		self._devicetype = config["IOS"]

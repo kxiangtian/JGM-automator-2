@@ -2,12 +2,12 @@ from cv import UIMatcher
 from PIL import Image
 from util import *
 from devices import *
+from constant import *
 import uiautomator2 as u2
 import wda
 import cv2 
 import threading
 import random
-
 
 
 class Automator:
@@ -21,30 +21,36 @@ class Automator:
             self.d = u2.connect(d.device())
 
         self.dWidth, self.dHeight = self.d.window_size()
-        print("(",self.dWidth,"x",self.dHeight,")")
+        print("Screen (",self.dWidth,"x",self.dHeight,")")
 
         self.pos = d.pos()
-        print("建筑位置")
+        print("Position of building")
         print_d(self.pos)
+
+        self._count = {"swipe" : 0,
+                        "upgrade" : 0,
+                        "harvest" : 0}
+        print("="*23 + "Info" + "="*23)
+        print_d(self._count)
         # auto_task = False
-        self.auto_task = d.aT()
-        print("自动任务",self.auto_task)
+        #self.auto_task = d.aT()
+        #print("自动任务",self.auto_task)
 
         # auto_policy = True
-        self.auto_policy = d.aP()
-        print("自动升级政策",self.auto_policy)
+        #self.auto_policy = d.aP()
+        #print("自动升级政策",self.auto_policy)
 
         # upgrade_list: list
-        self.upgrade_list = [] if d.aU() == True else d.aU()[0]
-        print("升级列表", self.upgrade_list)
+        #self.upgrade_list = [] if d.aU() == True else d.aU()[0]
+        #print("升级列表", self.upgrade_list)
 
         # harvest_filter:list
-        self.harvest_filter = d.hFL()
-        print("收割过滤",self.harvest_filter)
+        #self.harvest_filter = d.hFL()
+        #print("收割过滤",self.harvest_filter)
 
         # speedup = True
-        self.loot_speedup = False
-        print("物资加速",self.loot_speedup)
+        #self.loot_speedup = False
+        #print("物资加速",self.loot_speedup)
 
         print("-"*55)
     
@@ -52,45 +58,47 @@ class Automator:
     启动脚本，请确保已进入游戏页面。
     """
     def start(self):
-        d = self.d
         while True:
-            # 检测是否在游戏界面
+
+            # Check if it is in the game
             self._runApp()
-            # 滑动屏幕,获取金币。
+
+            # Swipe the screen to get the gold
             self._swipe()
-            
+
+
             # 判断是否可升级政策
-            self.check_policy()
+            #self.check_policy()
 
             # 判断是否可完成任务
-            self.check_task()
+            #self.check_task()
 
             # 判断货物那个叉叉是否出现
-            good_id = self._has_good()
-            if len(good_id) > 0:
-                print("[%s] Train come."%time.asctime())
-                self.harvest(self.harvest_filter, good_id)
-            else:
-                print("[%s] No Goods! Wait 2s."%time.asctime())
-                self._swipe()
-                time.sleep(2)
-                continue
+            #good_id = self._has_good()
+            #if len(good_id) > 0:
+            #    print("[%s] Train come."%time.asctime())
+            #    self.harvest(self.harvest_filter, good_id)
+            #else:
+            #    print("[%s] No Goods! Wait 2s."%time.asctime())
+            #    self._swipe()
+            #    time.sleep(2)
+            #    continue
             
             # 再看看是不是有货没收，如果有就重启app
-            good_id = self._has_good()
-            if len(good_id) > 0 and self.loot_speedup:
-                self.d.app_stop("com.tencent.jgm")
-                print("[%s] Reset app."%time.asctime())
-                time.sleep(2)
+            #good_id = self._has_good()
+            #if len(good_id) > 0 and self.loot_speedup:
+            #    self.d.app_stop("com.tencent.jgm")
+            #    print("[%s] Reset app."%time.asctime())
+            #    time.sleep(2)
                 # 重新启动app
-                self.d.app_start("com.tencent.jgm")
+            #    self.d.app_start("com.tencent.jgm")
                 # 冗余等待游戏启动完毕
-                time.sleep(15)
-                continue
+            #    time.sleep(15)
+            #    continue
 
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
-            d.click(550/1080, 1650/1920)
+            #d.click(550/1080, 1650/1920)
             #self._upgrade()
             #self.upgrade(self.upgrade_list)
             
@@ -239,15 +247,7 @@ class Automator:
             R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
             self._tap(1045,1373)
 
-    def _drag(self, sx, sy, ex, ey, times = 0.1):
-        if self._IOS:
-            self.d.swipe(sx, sy, ex, ey, times)
-        else:
-            self.d.drag(sx, sy, ex, ey, duration = times)
 
-    '''
-    get screen shot by threads since IOS not support touch_Down
-    '''
     def get_screenshot_while_touching(self, location, pressed_time=0.2):
         '''
         Get screenshot with screen touched.
@@ -264,6 +264,18 @@ class Automator:
         # 返回按下前后两幅图
         return screen_before, screen
 
+    def _Touch_hold(self, x, y,pressed_time = 0.2):
+        msg("Touch hold start " + str(pressed_time))
+        if self._IOS:
+            self.d.tap_hold(x, y, pressed_time*20)
+        else:
+            x,y = (location[0] * self.dWidth,location[1] * self.dHeight)
+            self.d.touch.down(x,y)
+            time.sleep(pressed_time)
+            self.d.touch.up(x,y)
+        msg("Touch hold end " + str(pressed_time))      
+
+
     """
     Screen shot compatiable Version for both IOS and Android
     """
@@ -274,16 +286,14 @@ class Automator:
         else:
             return self.d.screenshot(format="opencv")
 
-    def _Touch_hold(self, x, y,pressed_time = 0.2):
-        msg("Touch hold start " + str(pressed_time))
+    """
+    This function will perform the drag
+    """
+    def _drag(self, sx, sy, ex, ey, times = 0.1):
         if self._IOS:
-            self.d.tap_hold(x, y, pressed_time*20)
+            self.d.swipe(sx, sy, ex, ey, times)
         else:
-            x,y = (location[0] * self.dWidth,location[1] * self.dHeight)
-            self.d.touch.down(x,y)
-            time.sleep(pressed_time)
-            self.d.touch.up(x,y)
-        msg("Touch hold end " + str(pressed_time))
+            self.d.drag(sx, sy, ex, ey, duration = times)
 
     """
     Run App if App is not front.
@@ -311,20 +321,25 @@ class Automator:
     def _swipe(self):
         try:
             if 1 == random.randint(0,1):
-                msg("横向滑动收集金币")
+                #msg("Slide horizontally to collect gold COINS")
                 for i in range(3):
                     sx, sy = self.pos[i * 3 + 1]
                     ex, ey = self.pos[i * 3 + 3]
                     self.d.swipe(sx-0.1, sy+0.05, ex, ey)
             else:
-                msg("竖向滑动收集金币")
+                #msg("Swipe vertically to collect gold COINS")
                 for i in range(3):
                     sx, sy = self.pos[i + 1]
                     ex, ey = self.pos[i + 7]
                     n = random.uniform(-0.003,0.003)
                     #Pout(sx, sy,ex, ey,sx-n, sy+n)
                     self.d.swipe(sx - n , sy + n, ex, ey)
-
+            self._count["swipe"] += 1
         except(Exception):
             # wait for 10s
             s(10)
+
+    def __str__(self):
+        print("="*23 + "Info" + "="*23)
+        print_d(self._count)
+        return "="*50

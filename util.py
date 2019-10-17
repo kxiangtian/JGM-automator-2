@@ -1,4 +1,5 @@
 import time,json,os,sys,re
+from GUI import *
 
 DEBUG = True
 
@@ -8,19 +9,6 @@ def load_configure(file: str):
     res=json.loads(content)
     Pout(res)
     return(res)
-
-# 三个车厢货物的位置
-GOODS_POSITIONS = { 1: (0.609,0.854),
-                    2: (0.758,0.815),
-                    3: (0.896,0.766)}
-
-# 货物的那个叉叉的位置 相对位置
-CROSS_POSITIONS = { 1: (0.632, 0.878),
-                    2: (0.776, 0.836),
-                    3: (991/1080, 1517/1920)}
-
-
-JGM_tag = "com.tencent.jgm"
 
 def msg(message):
     print("[%s]"%time.asctime(),message)
@@ -44,6 +32,8 @@ def Pout(*args):
         print()
         print("<"*50)
         print()
+    if GUI:
+        print("GUI model")
 
 
 # print dict 
