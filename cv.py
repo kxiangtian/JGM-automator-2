@@ -182,6 +182,8 @@ class UIMatcher:
         result = result["words_result"]
         if type(result) is list:
             result = result[0]["words"]
+
+        os.remove("cropped.png")
         return result
 
     '''
@@ -197,7 +199,7 @@ class UIMatcher:
             text = pytesseract.image_to_string(Image.open("cropped.png"), config=tessdata_dir_config)
         else:
             text = pytesseract.image_to_string(Image.open("cropped.png"))
-        #os.remove("cropped.png")
+        os.remove("cropped.png")
         #print("<"*5,text)
         return text
 

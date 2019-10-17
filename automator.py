@@ -258,7 +258,7 @@ class Automator:
             ex, ey = source
             #Pout(sx,sy,ex,ey)
             for i in range(times):
-                self._drag(sx, sy, ex, ey, 0.5)
+                self._drag(sx, sy, ex, ey)
                 s()
         except(Exception):
             pass
