@@ -1,4 +1,3 @@
-
 import imutils,cv2,numpy as np
 from util import *
 
@@ -101,6 +100,7 @@ class UIMatcher:
             square = UIMatcher.getLittleSquare(img0,pos[building_ID],edge=0.1)
             buildings.append(np.mean(square))
         # 返回平均亮度最强的建筑物
+        print("Determine Green Light", buildings.index(max(buildings))+1)
         return buildings.index(max(buildings))+1
 
     @staticmethod

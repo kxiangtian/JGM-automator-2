@@ -99,7 +99,7 @@ def Assign_Position(Ss):
 	Pout("屏幕比例:",Ss,Ss == 3,"\nIphone X,Xs,8P,7P,6sP,6P"
 		,Ss == 2,"\nIphone 8,7,6s,6,SE")
 	BUILDING_POSITIONS = dict()
-	if Ss == "16.0:9":
+	if Ss == "16.0:9" or Ss == 3:
 		BUILDING_POSITIONS = {
 		1: (294/1080, 1184/1920),
 		2: (551/1080, 1061/1920),
@@ -123,11 +123,7 @@ def Assign_Position(Ss):
 		8: (595/1080, 795/2248),
 		9: (787/1080, 681/2248)
 		}
-
-	elif Ss == 3:
-		BUILDING_POSITIONS = {
-
-		}
+		
 	elif Ss == 2:
 		BUILDING_POSITIONS = {
 

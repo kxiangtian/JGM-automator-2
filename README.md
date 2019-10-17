@@ -15,6 +15,7 @@
 
 ### IOS
 - [x] 自动收金币
+- [ ] 自动收货
 
 
 ## 安装与运行
@@ -82,4 +83,7 @@ python main.py
 <img src="https://github.com/openatx/facebook-wda/raw/master/images/ios-display.png" style="zoom:40%" />
 
 ## Log
+
+## Contributors
+[jiahonzheng](https://github.com/Jiahonzheng/)
 

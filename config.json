@@ -1,13 +1,13 @@
 {
     "Deivce": "665c4235",
     
-    "IOS"	: false,
+    "IOS"	: true,
 
     "IP"	: "localhost",
 
     "Auto_Upgrade" : false,
 
-    "Auto_task":true,
+    "Auto_task":false,
 
     "Auto_policy":true,
 

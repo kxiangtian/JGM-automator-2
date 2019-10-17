@@ -1,8 +1,11 @@
 from cv import UIMatcher
+from PIL import Image
 from util import *
 from devices import *
 import uiautomator2 as u2
 import wda
+import cv2 
+import threading
 import random
 
 
@@ -55,22 +58,21 @@ class Automator:
             self._runApp()
             # 滑动屏幕,获取金币。
             self._swipe()
-
-            
             
             # 判断是否可升级政策
             self.check_policy()
+
             # 判断是否可完成任务
             self.check_task()
-            # 判断货物那个叉叉是否出现
 
+            # 判断货物那个叉叉是否出现
             good_id = self._has_good()
             if len(good_id) > 0:
                 print("[%s] Train come."%time.asctime())
                 self.harvest(self.harvest_filter, good_id)
             else:
                 print("[%s] No Goods! Wait 2s."%time.asctime())
-                self.swipe()
+                self._swipe()
                 time.sleep(2)
                 continue
             
@@ -119,32 +121,14 @@ class Automator:
         这一段应该用numpy来实现，奈何我对numpy不熟。。。
         '''
         diff_screens = self.get_screenshot_while_touching(GOODS_POSITIONS[good_id]) 
-        return UIMatcher.findGreenLight(diff_screens,self.pos)
-
-    def get_screenshot_while_touching(self, location, pressed_time=0.2):
-        '''
-        Get screenshot with screen touched.
-        '''
-        screen_before = self.d.screenshot(format="opencv")
-        h,w = len(screen_before),len(screen_before[0])
-        x,y = (location[0] * w,location[1] *h)
-        # 按下
-        self.d.touch.down(x,y)
-        # print('[%s]Tapped'%time.asctime())
-        time.sleep(pressed_time)
-        # 截图
-        screen = self.d.screenshot(format="opencv")
-        # print('[%s]Screenning'%time.asctime())
-        # 松开
-        self.d.touch.up(x,y)
-        # 返回按下前后两幅图
-        return screen_before, screen
+        result = UIMatcher.findGreenLight(diff_screens,self.pos)
+        return  result
 
     def check_policy(self):
         if not self.auto_policy:
             return
         # 看看政策中心那里有没有冒绿色箭头气泡
-        if len(UIMatcher.findGreenArrow(self.d.screenshot(format="opencv"))):
+        if len(UIMatcher.findGreenArrow(self._Sshot())):
             # 打开政策中心
             self.d.click(0.206, 0.097)
             ms()
@@ -154,7 +138,7 @@ class Automator:
             self._slide_to_top()
             # 开始找绿色箭头,找不到就往下滑,最多划5次
             for i in range(5):
-                screen = self.d.screenshot(format="opencv")
+                screen = self._Sshot()
                 arrows = UIMatcher.findGreenArrow(screen)
                 if len(arrows):
                     x,y = arrows[0]
@@ -173,7 +157,7 @@ class Automator:
         if not self.auto_task:
             return
         # 看看任务中心有没有冒黄色气泡
-        screen = self.d.screenshot(format="opencv")
+        screen = self._Sshot()
         if UIMatcher.findTaskBubble(screen):
             self.d.click(0.16, 0.84) # 打开城市任务
             s()
@@ -182,14 +166,14 @@ class Automator:
             self._back_to_main()
 
     def _open_upgrade_interface(self):
-        screen = self.d.screenshot(format="opencv")
+        screen = self._Sshot()
         # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
         R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         if B > R:
             self.d.click(1061/1080, 1369/2248)
 
     def _close_upgrade_interface(self):
-        screen = self.d.screenshot(format="opencv")
+        screen = self._Sshot()
         # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
         R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         if B < R:
@@ -208,7 +192,7 @@ class Automator:
             sx, sy = GOODS_POSITIONS[good]
             ex, ey = source
             for i in range(times):
-                self.d.drag(sx, sy, ex, ey, duration = 0.1)
+                self._drag(sx, sy, ex, ey, times)
                 s()
         except(Exception):
             pass    
@@ -217,7 +201,7 @@ class Automator:
         '''
         返回有货的位置列表
         '''
-        screen = self.d.screenshot(format="opencv")  
+        screen = self._Sshot()  
         return UIMatcher.detectCross(screen)
 
     def _slide_to_top(self):
@@ -235,10 +219,11 @@ class Automator:
         self.d.swipe(sx, sy, sx + 1, sy + 1)
         time.sleep(random.randint(1,5) * 0.1)
     
+
     def _upgrade(self):
         #点开升级界面
         self._tap(1045,1373)
-        screen = self.d.screenshot(format="opencv")
+        screen = self._Sshot()
         R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         if B > R:
             self._tap(983,1830)
@@ -247,27 +232,74 @@ class Automator:
                 sx, sy = self.pos[i + 1]
                 self._tap(sx,sy)
                 self._tap(859,2053)
-        screen = self.d.screenshot(format="opencv")
+        screen = self._Sshot()
         R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         while (B > R):
-            screen = self.d.screenshot(format="opencv")
+            screen = self._Sshot()
             R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
             self._tap(1045,1373)
+
+    def _drag(self, sx, sy, ex, ey, times = 0.1):
+        if self._IOS:
+            self.d.swipe(sx, sy, ex, ey, times)
+        else:
+            self.d.drag(sx, sy, ex, ey, duration = times)
+
+    '''
+    get screen shot by threads since IOS not support touch_Down
+    '''
+    def get_screenshot_while_touching(self, location, pressed_time=0.2):
+        '''
+        Get screenshot with screen touched.
+        '''
+        screen_before = self._Sshot()
+        x,y = (location[0],location[1])
+        # Revised touch down for both IOS and Android
+        t = threading.Thread(name='Touch down', target=self._Touch_hold, args=(x,y,)) 
+        # 截图
+        t.start()
+        msg("Screen shot")
+        screen = self._Sshot("hold")
+
+        # 返回按下前后两幅图
+        return screen_before, screen
+
+    """
+    Screen shot compatiable Version for both IOS and Android
+    """
+    def _Sshot(self, png = "s"):
+        if self._IOS:
+            self.d.screenshot().save(png + ".png")
+            return cv2.imread(png + ".png")
+        else:
+            return self.d.screenshot(format="opencv")
+
+    def _Touch_hold(self, x, y,pressed_time = 0.2):
+        msg("Touch hold start " + str(pressed_time))
+        if self._IOS:
+            self.d.tap_hold(x, y, pressed_time*20)
+        else:
+            x,y = (location[0] * self.dWidth,location[1] * self.dHeight)
+            self.d.touch.down(x,y)
+            time.sleep(pressed_time)
+            self.d.touch.up(x,y)
+        msg("Touch hold end " + str(pressed_time))
 
     """
     Run App if App is not front.
     """
     def _runApp(self):
         # 判断jgm进程是否在前台, 最多等待20秒，否则唤醒到前台
-        if not self._IOS and self.d.app_wait(JGM_tag, front=True,timeout=20):
+        if not self._IOS and not self.d.app_wait(JGM_tag, front=True,timeout=20):
             # 从后台换到前台，留一点反应时间
-            print("App is front. JGM agent start in 5 seconds")
-            time.sleep(5) 
-        elif self._IOS:
-            print(self.d.app_current())
-        else:
+            msg("App is not front. Start App and run in 5 seconds")
             self.d.app_start(JGM_tag)
-            continue
+            time.sleep(5)
+
+        elif self._IOS and not self.d.app_current()["bundleId"] == JGM_tag:
+            msg("App is not front. Start App and run in 5 seconds")
+            self.d.app_activate(JGM_tag)
+            time.sleep(5)
 
     """
     Random Swipe for getting Money
