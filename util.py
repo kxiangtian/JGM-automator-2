@@ -9,23 +9,18 @@ def load_configure(file: str):
     Pout(res)
     return(res)
 
-# def get_upgrade_list(json_list: dict):
-#     return list(zip(json_list['要升级的建筑物'], json_list['对应升级次数']))
-
-# def clip_triangle()
-
 # 三个车厢货物的位置
-GOODS_POSITIONS = { 1: (0.609,0.854),
-                    2: (0.758,0.815),
-                    3: (0.896,0.766)}
+GOODS_POSITIONS = { 1: (661/1080,1841/2248),
+                    2: (821/1080,1767/2248),
+                    3: (957/1080,1689/2248)}
 
 # 货物的那个叉叉的位置 相对位置
-CROSS_POSITIONS = { 1: (0.632, 0.878),
-                    2: (0.776, 0.836),
-                    3: (991/1080, 1517/1920)}
+CROSS_POSITIONS = { 1: (681/1080, 1893/2248),
+                    2: (839/1080, 1813/2248),
+                    3: (989/1080, 1727/2248)}
 
 
-
+JGM_tag = "com.tencent.jgm"
 
 def msg(message):
     print("[%s]"%time.asctime(),message)

@@ -74,7 +74,7 @@ class UIMatcher:
             return True
 
     @staticmethod
-    def findGreenLight(diff_screens, th=100):
+    def findGreenLight(diff_screens,pos , th=100):
         screen_before, screen_after = diff_screens
         # 转换成有符号数以处理相减后的负值
         screen_before = screen_before.astype(np.int16)
@@ -98,7 +98,7 @@ class UIMatcher:
         # plt.show()
         buildings = []
         for building_ID in range(1,10):
-            square = UIMatcher.getLittleSquare(img0,BUILDING_POSITIONS[building_ID],edge=0.1)
+            square = UIMatcher.getLittleSquare(img0,pos[building_ID],edge=0.1)
             buildings.append(np.mean(square))
         # 返回平均亮度最强的建筑物
         return buildings.index(max(buildings))+1

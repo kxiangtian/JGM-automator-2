@@ -10,10 +10,13 @@ import random
 class Automator:
     def __init__(self, d: Devices):
         print("-"*20 + "Automator Init" + "-"*20)
-        if d.IOS():
+        self._IOS = d.IOS()
+
+        if self._IOS:
             self.d = d.session()
         else:
             self.d = u2.connect(d.device())
+
         self.dWidth, self.dHeight = self.d.window_size()
         print("(",self.dWidth,"x",self.dHeight,")")
 
@@ -36,32 +39,24 @@ class Automator:
         self.harvest_filter = d.hFL()
         print("收割过滤",self.harvest_filter)
 
-        self.appRunning = False
-        print("程序运行",self.appRunning)
-
         # speedup = True
         self.loot_speedup = False
         print("物资加速",self.loot_speedup)
 
         print("-"*55)
-
+    
+    """
+    启动脚本，请确保已进入游戏页面。
+    """
     def start(self):
-        """
-        启动脚本，请确保已进入游戏页面。
-        """
         d = self.d
         while True:
-            # 判断jgm进程是否在前台, 最多等待20秒，否则唤醒到前台
-            if d.app_wait("com.tencent.jgm", front=True,timeout=20):
-                if not self.appRunning:
-                    # 从后台换到前台，留一点反应时间
-                    print("App is front. JGM agent start in 5 seconds")
-                    time.sleep(5) 
-                self.appRunning = True
-            else:
-                d.app_start("com.tencent.jgm")
-                self.appRunning = False
-                continue
+            # 检测是否在游戏界面
+            self._runApp()
+            # 滑动屏幕,获取金币。
+            self._swipe()
+
+            
             
             # 判断是否可升级政策
             self.check_policy()
@@ -94,9 +89,9 @@ class Automator:
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
             d.click(550/1080, 1650/1920)
-            self.upgrade(self.upgrade_list)
-            # 滑动屏幕，收割金币。
-            self.swipe()
+            #self._upgrade()
+            #self.upgrade(self.upgrade_list)
+            
 
     def upgrade(self, upgrade_list):
         if not len(upgrade_list):
@@ -115,7 +110,7 @@ class Automator:
             pos_id = self.guess_good(good)
             if pos_id != 0 and pos_id in building_filter:
                 # 搬5次
-                self._move_good_by_id(good, BUILDING_POSITIONS[pos_id], times=4)
+                self._move_good_by_id(good, self.pos[pos_id], times=4)
                 s()
       
     def guess_good(self, good_id):
@@ -124,7 +119,7 @@ class Automator:
         这一段应该用numpy来实现，奈何我对numpy不熟。。。
         '''
         diff_screens = self.get_screenshot_while_touching(GOODS_POSITIONS[good_id]) 
-        return UIMatcher.findGreenLight(diff_screens)
+        return UIMatcher.findGreenLight(diff_screens,self.pos)
 
     def get_screenshot_while_touching(self, location, pressed_time=0.2):
         '''
@@ -189,23 +184,23 @@ class Automator:
     def _open_upgrade_interface(self):
         screen = self.d.screenshot(format="opencv")
         # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
-        R, G, B = UIMatcher.getPixel(screen,0.974,0.615)
+        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         if B > R:
-            self.d.click(0.9, 0.57)
+            self.d.click(1061/1080, 1369/2248)
 
     def _close_upgrade_interface(self):
         screen = self.d.screenshot(format="opencv")
         # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
-        R, G, B = UIMatcher.getPixel(screen,0.974,0.615)
+        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
         if B < R:
-            self.d.click(0.9, 0.57)
+            self.d.click(1061/1080, 1369/2248)
 
     def _upgrade_one_with_count(self,id,count):
         sx, sy=BUILDING_POSITIONS[id]
         self.d.click(sx, sy)
         time.sleep(0.3)
         for i in range(count):
-            self.d.click(0.798, 0.884)
+            self.d.click(859,2053)
             # time.sleep(0.1)
        
     def _move_good_by_id(self, good: int, source, times=1):
@@ -235,13 +230,53 @@ class Automator:
             self.d.click(0.057, 0.919)
             s()
 
+
+    def _tap(self,sx,sy):
+        self.d.swipe(sx, sy, sx + 1, sy + 1)
+        time.sleep(random.randint(1,5) * 0.1)
+    
+    def _upgrade(self):
+        #点开升级界面
+        self._tap(1045,1373)
+        screen = self.d.screenshot(format="opencv")
+        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
+        if B > R:
+            self._tap(983,1830)
+            #一次点击建筑
+            for i in range(9):
+                sx, sy = self.pos[i + 1]
+                self._tap(sx,sy)
+                self._tap(859,2053)
+        screen = self.d.screenshot(format="opencv")
+        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
+        while (B > R):
+            screen = self.d.screenshot(format="opencv")
+            R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
+            self._tap(1045,1373)
+
     """
-    随机概率滑动模式，滑动屏幕，收割金币。
-    Simulate swipe, (Android === IOS)
-    swipe(x1, y1, x2, y2, 0.5) # 0.5s(IOS, Android? )
+    Run App if App is not front.
+    """
+    def _runApp(self):
+        # 判断jgm进程是否在前台, 最多等待20秒，否则唤醒到前台
+        if not self._IOS and self.d.app_wait(JGM_tag, front=True,timeout=20):
+            # 从后台换到前台，留一点反应时间
+            print("App is front. JGM agent start in 5 seconds")
+            time.sleep(5) 
+        elif self._IOS:
+            print(self.d.app_current())
+        else:
+            self.d.app_start(JGM_tag)
+            continue
+
+    """
+    Random Swipe for getting Money
+    Flip a coin to determine swipe horizontally or vertically
+    (Android === IOS) Simulate swipe
+    swipe(x1, y1, x2, y2, 0.5) # 0.5s(IOS, Android?)
     swipe(0.5, 0.5, 0.5, 1.0)  # swipe middle to bottom
     """
-    def swipe(self):
+    def _swipe(self):
         try:
             if 1 == random.randint(0,1):
                 msg("横向滑动收集金币")
@@ -259,5 +294,5 @@ class Automator:
                     self.d.swipe(sx - n , sy + n, ex, ey)
 
         except(Exception):
-            # 用户在操作手机，暂停10秒
+            # wait for 10s
             s(10)
