@@ -82,8 +82,12 @@ class Automator:
         
         self._AssignGoodsPosition()
 
-        while True:
+        n = random.randint(95,105)
+        n2 = 0
 
+        while True:
+            if n2%n == 0:
+                print(self)
             # Check if it is in the game
             self._runApp()
 
@@ -104,7 +108,7 @@ class Automator:
             #d.click(550/1080, 1650/1920)
             #self._upgrade()
             #self.upgrade(self.upgrade_list)
-            
+            n2 += 1
 
     def upgrade(self, upgrade_list):
         if not len(upgrade_list):
@@ -229,6 +233,7 @@ class Automator:
                 pass
             else:
                 self._Move_good_Android()
+                self._count["harvest"] += 1
 
     def _Move_good_Android(self):
         ''' self._pos_good

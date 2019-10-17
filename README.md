@@ -9,6 +9,8 @@
 
 ## 功能
 
+- [x] Print out Information Every n times
+
 ### Android
 - [x] 自动收金币
 - [x] 自动收货
