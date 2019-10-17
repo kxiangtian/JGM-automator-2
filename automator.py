@@ -64,7 +64,10 @@ class Automator:
         if DEBUG:
             #self._count['money'] = UIMatcher.orcbyArea(self._Sshot(),AREA(247,128,407,190))
             #UIMatcher.saveScreen(self._Sshot())
-            self._Initial_Building()
+            #self._Initial_Building()
+            #print(self.d(className="android.widget.FrameLayout", resourceId="android:id/content") \
+            #.child(className="android.widget.FrameLayout")\
+            #.child(className="android.view.View").info)
 
         while True:
 
@@ -72,7 +75,7 @@ class Automator:
             self._runApp()
 
             # Swipe the screen to get the gold
-            #self._swipe()
+            self._swipe()
 
 
             # 判断是否可升级政策

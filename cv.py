@@ -1,11 +1,14 @@
 import imutils,cv2,numpy as np
 from util import *
+from Orc import *
 from PIL import Image
+from aip import AipOcr
 import pytesseract
 import os
 
 WIN10 = True
 tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
+aipOcr  = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
 class UIMatcher:
 
@@ -151,7 +154,23 @@ class UIMatcher:
         y1 = int((ry+edge)*h)
         return img[y0:y1,x0:x1]
 
+    @staticmethod
+    def BdOrc(screen,area: AREA):
+        # 定义参数变量
+        options = {
+          'detect_direction': 'true',
+          'language_type': 'CHN_ENG',
+        }
 
+        cropped = screen[area.y1:area.y2, area.x1:area.x2]
+
+        gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+        cv2.imwrite("cropped.png", gray)
+
+        # 调用通用文字识别接口
+        result = aipOcr.basicAccurate(get_file_content("cropped.png"), options)
+
+        print(result)
 
     @staticmethod
     def orcbyArea(screen,area: AREA):
@@ -160,9 +179,9 @@ class UIMatcher:
         gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         cv2.imwrite("cropped.png", gray)
         if WIN10:
-            text = pytesseract.image_to_string(Image.open("cropped.png"), lang='JGM', config=tessdata_dir_config)
+            text = pytesseract.image_to_string(Image.open("cropped.png"), config=tessdata_dir_config)
         else:
-            text = pytesseract.image_to_string(Image.open("cropped.png"), lang='JGM')
+            text = pytesseract.image_to_string(Image.open("cropped.png"))
         #os.remove("cropped.png")
         #print("<"*5,text)
         return text

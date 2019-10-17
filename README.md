@@ -5,7 +5,7 @@
 - [ ] GUI 显示信息 和 配置勾选
 - [x] 转换基本配置文件
 - [x] 改写收取金币 (Android)
-- [ ] 适配收取金币 (IOS)
+- [x] 适配收取金币 (IOS)
 
 ## 功能
 
@@ -83,6 +83,8 @@ python main.py
 <img src="https://github.com/openatx/facebook-wda/raw/master/images/ios-display.png" style="zoom:40%" />
 
 ## Log
+### 10/17
+- pytesseract 中文识别效果并不好 中文改换成百度ORC
 
 ## Contributors
 [jiahonzheng](https://github.com/Jiahonzheng/)

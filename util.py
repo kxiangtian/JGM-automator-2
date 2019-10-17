@@ -3,6 +3,11 @@ from GUI import *
 
 DEBUG = True
 
+# 读取图片
+def get_file_content(filePath):
+    with open(filePath, 'rb') as fp:
+        return fp.read()
+
 class AREA:
   def __init__(self, x1, y1,x2,y2):
       self.x1 = x1
