@@ -19,8 +19,8 @@ class Devices:
 		self._ScreenSize = self.get_screen_size()
 
 		# 游戏配置 Configuration
-		self._position = Assign_Position(self._ScreenSize)
-		
+		self._position,self._goods,self._features = Assign_Position(self._ScreenSize)
+		 
 		# Automatic upgrade by calculation | disable uBL uBlL
 		self._aU = config["Auto_Upgrade"] 
 		self._aT = config["Auto_task"]
@@ -31,6 +31,12 @@ class Devices:
 		self._uBL = config["Upgrade_Building"] #empty for all
 		self._uBlL= config["Upgrade_Building_Level"] #empty for each once
 		self._hFL = config["Harvest_filter"] #len(0) = everything
+
+	def features(self):
+		return self._features
+
+	def goods(self):
+		return self._goods
 
 	def hFL(self):
 		return self._hFL
@@ -98,6 +104,8 @@ def Assign_Position(Ss):
 	Pout("屏幕比例:",Ss,Ss == 3,"\nIphone X,Xs,8P,7P,6sP,6P"
 		,Ss == 2,"\nIphone 8,7,6s,6,SE")
 	BUILDING_POSITIONS = dict()
+	GOODS = dict()
+	FEATURES = dict()
 	if Ss == "16.0:9" or Ss == 3:
 		BUILDING_POSITIONS = {
 		1: (294/1080, 1184/1920),
@@ -109,6 +117,11 @@ def Assign_Position(Ss):
 		7: (304/1080, 681/1920),
 		8: (541/1080, 568/1920),
 		9: (787/1080, 447/1920)
+		}
+		GOODS = {
+		}
+		FEATURES={
+
 		}
 	elif Ss == "18.7:9":
 		BUILDING_POSITIONS = {
@@ -122,15 +135,34 @@ def Assign_Position(Ss):
 		8: (595/1080, 795/2248),
 		9: (787/1080, 681/2248)
 		}
-		
+		GOODS = {
+		1: (618/1080,1813/2248),
+		2: (772/1080,1723/2248),
+		3: (939/1080,1645/2248)
+		}
+		FEATURES = {
+		"B_Upgrade" : (1059/1080,1367/2248),
+		"B_Store" : (522/1080,2151/2248),
+		"B_Build" : (181/1080,2142/2248),
+		"B_Task" : (184/1080,1825/2248),
+		"B_Policy" : (221/1080,403/2248),
+		"R_gold": AREA(247,128,407,190),
+		"R_Names" : AREA(339,1680,819,1755),
+		"R_Levels" : AREA(339,1688,471,1750)
+		}
 	elif Ss == 2:
 		BUILDING_POSITIONS = {
+
+		}
+		GOODS = {
+		}
+		FEATURES = {
 
 		}
 	else:
 		print("没有找到对应屏比对应位置")
 		sys.exit()
-	return BUILDING_POSITIONS	
+	return BUILDING_POSITIONS,GOODS,FEATURES
 
 # get Scale of Screen
 def Scale(Ss):

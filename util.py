@@ -3,6 +3,13 @@ from GUI import *
 
 DEBUG = True
 
+class AREA:
+  def __init__(self, x1, y1,x2,y2):
+      self.x1 = x1
+      self.y1 = y1
+      self.x2 = x2
+      self.y2 = y2
+
 def load_configure(file: str):
     f=open(file,encoding='utf-8')
     content=f.read()

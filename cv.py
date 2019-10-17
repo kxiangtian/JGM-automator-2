@@ -1,5 +1,11 @@
 import imutils,cv2,numpy as np
 from util import *
+from PIL import Image
+import pytesseract
+import os
+
+WIN10 = True
+tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
 
 class UIMatcher:
 
@@ -144,3 +150,32 @@ class UIMatcher:
         y0 = int((ry-edge)*h)
         y1 = int((ry+edge)*h)
         return img[y0:y1,x0:x1]
+
+
+
+    @staticmethod
+    def orcbyArea(screen,area: AREA):
+        cropped = screen[area.y1:area.y2, area.x1:area.x2]
+        #cv2.imwrite('out.jpg', cropped)
+        gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+        cv2.imwrite("cropped.png", gray)
+        if WIN10:
+            text = pytesseract.image_to_string(Image.open("cropped.png"), lang='JGM', config=tessdata_dir_config)
+        else:
+            text = pytesseract.image_to_string(Image.open("cropped.png"), lang='JGM')
+        #os.remove("cropped.png")
+        #print("<"*5,text)
+        return text
+
+    @staticmethod
+    def saveScreen(screen,*args):
+        n = len(args)
+        if n >= 1 and isinstance(args[0], AREA):
+            screen = screen[args[0].y1:args[0].y2, args[0].x1:args[0].x2]
+        if n >= 2 and args[1] == 'g':
+            gray = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
+            if n >= 3:
+                cv2.imwrite('g' + str(args[2]) + '.png', gray)  
+            else:
+                cv2.imwrite('g.png', gray) 
+        cv2.imwrite('s.png', screen)

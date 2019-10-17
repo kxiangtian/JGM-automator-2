@@ -24,14 +24,17 @@ class Automator:
         print("Screen (",self.dWidth,"x",self.dHeight,")")
 
         self.pos = d.pos()
-        print("Position of building")
-        print_d(self.pos)
+        self._btn = d.features()
+        print("Initialized Position of building")
+        #print_d(self.pos)
 
         self._count = {"swipe" : 0,
                         "upgrade" : 0,
-                        "harvest" : 0}
-        print("="*23 + "Info" + "="*23)
-        print_d(self._count)
+                        "harvest" : 0,
+                        "money"   : 0}
+        print("Initialized Counts")
+
+        
         # auto_task = False
         #self.auto_task = d.aT()
         #print("自动任务",self.auto_task)
@@ -58,13 +61,18 @@ class Automator:
     启动脚本，请确保已进入游戏页面。
     """
     def start(self):
+        if DEBUG:
+            #self._count['money'] = UIMatcher.orcbyArea(self._Sshot(),AREA(247,128,407,190))
+            #UIMatcher.saveScreen(self._Sshot())
+            self._Initial_Building()
+
         while True:
 
             # Check if it is in the game
             self._runApp()
 
             # Swipe the screen to get the gold
-            self._swipe()
+            #self._swipe()
 
 
             # 判断是否可升级政策
@@ -111,18 +119,6 @@ class Automator:
         self._upgrade_one_with_count(building,count) 
         self._close_upgrade_interface()
 
-    def harvest(self,building_filter,goods:list):
-        '''
-        新的傻瓜搬货物方法,先按住截图判断绿光探测货物目的地,再搬
-        '''
-        s()
-        for good in goods:
-            pos_id = self.guess_good(good)
-            if pos_id != 0 and pos_id in building_filter:
-                # 搬5次
-                self._move_good_by_id(good, self.pos[pos_id], times=4)
-                s()
-      
     def guess_good(self, good_id):
         '''
         按住货物，探测绿光出现的位置
@@ -275,6 +271,52 @@ class Automator:
             self.d.touch.up(x,y)
         msg("Touch hold end " + str(pressed_time))      
 
+    def harvest(self,building_filter,goods:list):
+        '''
+        新的傻瓜搬货物方法,先按住截图判断绿光探测货物目的地,再搬
+        '''
+        s()
+        for good in goods:
+            pos_id = self.guess_good(good)
+            if pos_id != 0 and pos_id in building_filter:
+                # 搬5次
+                self._move_good_by_id(good, self.pos[pos_id], times=4)
+                s()
+
+
+
+
+
+
+    def _Initial_Building(self):
+        x,y = self._btn["B_Upgrade"]
+        if not self._IOS:
+            if not self._Is_Btn_Upgrade():
+                self._tap(x,y)
+
+            for i in range(9):
+                sx, sy = self.pos[i + 1]
+                self._tap(sx,sy)
+                building = UIMatcher.orcbyArea(self._Sshot(),self._btn["R_Names"])
+                #UIMatcher.saveScreen(self._Sshot(),self._btn["R_Names"],'g',i)
+                print(building)
+
+            if self._Is_Btn_Upgrade():
+                self._tap(x,y)
+
+    
+
+    def _Is_Btn_Upgrade(self):
+        x,y = self._btn["B_Upgrade"]
+        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
+        if B > R:
+            return False
+        elif B < R:
+            return True
+
+    def _tap(self,sx,sy):
+        self.d.click(sx, sy)
+        time.sleep(random.randint(1,5) * 0.1)
 
     """
     Screen shot compatiable Version for both IOS and Android
