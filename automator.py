@@ -396,6 +396,6 @@ class Automator:
     def __str__(self):
         print("="*23 + "Info" + "="*23)
         print_d(self._count)
-        Print_d(self._bd["pos"])
-        Print_d(self._bd["lvl"])
+        print_d(self._bd["pos"])
+        print_d(self._bd["lvl"])
         return "="*50
