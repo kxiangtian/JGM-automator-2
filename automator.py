@@ -218,17 +218,10 @@ class Automator:
 
     '''
     IOS has the different version of harvest
-    def harvest(self,building_filter,goods:list):
-        s()
-        for good in goods:
-            pos_id = self.guess_good(good)
-            if pos_id != 0 and pos_id in building_filter:
-                # 搬5次
-                self._move_good_by_id(good, self.pos[pos_id], times=4)
-                s()
     '''
     def _harvest(self):
         if self._has_train():
+            msg("Found train - harvest")
             if self._IOS:
                 pass
             else:
@@ -277,8 +270,7 @@ class Automator:
         R, G, B = UIMatcher.getPixel(screen,x,y)
         if R == 74 and G == 160 and B == 161:
             return True
-        msg("No train (" + str(R) + "," + str(G) +"," 
-            + str(B) + ")") 
+        #msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
         return False
     '''
     Assign each Type of items into dict for IOS
@@ -396,6 +388,5 @@ class Automator:
     def __str__(self):
         print("="*23 + "Info" + "="*23)
         print_d(self._count)
-        print_d(self._bd["pos"])
-        print_d(self._bd["lvl"])
+        print_2d(self._bd)
         return "="*50
