@@ -5,3 +5,4 @@ imutils
 pillow
 pytesseract
 wda
+baidu-aip

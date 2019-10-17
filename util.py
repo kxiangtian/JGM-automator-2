@@ -3,6 +3,20 @@ from GUI import *
 
 DEBUG = True
 
+def print_2d(res):
+    keys = set()
+    vals = res.values()
+    for val in vals:
+        for key in val.keys():
+            keys.add(key)
+    for key in keys:
+        print(key,end = ":")
+        for val in vals:
+            if key in val:
+                print(val[key], end = " ")
+        print()
+        
+
 # 读取图片
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:

@@ -24,6 +24,7 @@ class Automator:
         print("Screen (",self.dWidth,"x",self.dHeight,")")
 
         self.pos = d.pos()
+        self._pos_good = d.goods()
         self._btn = d.features()
         print("Initialized Position of building")
         #print_d(self.pos)
@@ -34,6 +35,15 @@ class Automator:
                         "money"   : 0}
         print("Initialized Counts")
 
+        self._bd= {
+            "pos": {},
+            "lvl": {},
+            "gds": {}
+        }
+
+        # harvest_filter:list
+        self.harvest_filter = d.hFL()
+        print("Position of goods: ",self.harvest_filter)
         
         # auto_task = False
         #self.auto_task = d.aT()
@@ -47,9 +57,7 @@ class Automator:
         #self.upgrade_list = [] if d.aU() == True else d.aU()[0]
         #print("升级列表", self.upgrade_list)
 
-        # harvest_filter:list
-        #self.harvest_filter = d.hFL()
-        #print("收割过滤",self.harvest_filter)
+
 
         # speedup = True
         #self.loot_speedup = False
@@ -64,10 +72,15 @@ class Automator:
         if DEBUG:
             #self._count['money'] = UIMatcher.orcbyArea(self._Sshot(),AREA(247,128,407,190))
             #UIMatcher.saveScreen(self._Sshot())
-            #self._Initial_Building()
             #print(self.d(className="android.widget.FrameLayout", resourceId="android:id/content") \
             #.child(className="android.widget.FrameLayout")\
             #.child(className="android.view.View").info)
+            pass
+
+        # Initial Building pos and their level
+        self._Initial_Building()
+        
+        self._AssignGoodsPosition()
 
         while True:
 
@@ -77,36 +90,15 @@ class Automator:
             # Swipe the screen to get the gold
             self._swipe()
 
+            # Harvest the goods
+            self._harvest()
 
             # 判断是否可升级政策
             #self.check_policy()
 
             # 判断是否可完成任务
             #self.check_task()
-
-            # 判断货物那个叉叉是否出现
-            #good_id = self._has_good()
-            #if len(good_id) > 0:
-            #    print("[%s] Train come."%time.asctime())
-            #    self.harvest(self.harvest_filter, good_id)
-            #else:
-            #    print("[%s] No Goods! Wait 2s."%time.asctime())
-            #    self._swipe()
-            #    time.sleep(2)
-            #    continue
             
-            # 再看看是不是有货没收，如果有就重启app
-            #good_id = self._has_good()
-            #if len(good_id) > 0 and self.loot_speedup:
-            #    self.d.app_stop("com.tencent.jgm")
-            #    print("[%s] Reset app."%time.asctime())
-            #    time.sleep(2)
-                # 重新启动app
-            #    self.d.app_start("com.tencent.jgm")
-                # 冗余等待游戏启动完毕
-            #    time.sleep(15)
-            #    continue
-
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
             #d.click(550/1080, 1650/1920)
@@ -121,15 +113,6 @@ class Automator:
         building,count = random.choice(upgrade_list)
         self._upgrade_one_with_count(building,count) 
         self._close_upgrade_interface()
-
-    def guess_good(self, good_id):
-        '''
-        按住货物，探测绿光出现的位置
-        这一段应该用numpy来实现，奈何我对numpy不熟。。。
-        '''
-        diff_screens = self.get_screenshot_while_touching(GOODS_POSITIONS[good_id]) 
-        result = UIMatcher.findGreenLight(diff_screens,self.pos)
-        return  result
 
     def check_policy(self):
         if not self.auto_policy:
@@ -193,23 +176,6 @@ class Automator:
         for i in range(count):
             self.d.click(859,2053)
             # time.sleep(0.1)
-       
-    def _move_good_by_id(self, good: int, source, times=1):
-        try:
-            sx, sy = GOODS_POSITIONS[good]
-            ex, ey = source
-            for i in range(times):
-                self._drag(sx, sy, ex, ey, times)
-                s()
-        except(Exception):
-            pass    
-
-    def _has_good(self):
-        '''
-        返回有货的位置列表
-        '''
-        screen = self._Sshot()  
-        return UIMatcher.detectCross(screen)
 
     def _slide_to_top(self):
         for i in range(3):
@@ -246,38 +212,9 @@ class Automator:
             R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
             self._tap(1045,1373)
 
-
-    def get_screenshot_while_touching(self, location, pressed_time=0.2):
-        '''
-        Get screenshot with screen touched.
-        '''
-        screen_before = self._Sshot()
-        x,y = (location[0],location[1])
-        # Revised touch down for both IOS and Android
-        t = threading.Thread(name='Touch down', target=self._Touch_hold, args=(x,y,)) 
-        # 截图
-        t.start()
-        msg("Screen shot")
-        screen = self._Sshot("hold")
-
-        # 返回按下前后两幅图
-        return screen_before, screen
-
-    def _Touch_hold(self, x, y,pressed_time = 0.2):
-        msg("Touch hold start " + str(pressed_time))
-        if self._IOS:
-            self.d.tap_hold(x, y, pressed_time*20)
-        else:
-            x,y = (location[0] * self.dWidth,location[1] * self.dHeight)
-            self.d.touch.down(x,y)
-            time.sleep(pressed_time)
-            self.d.touch.up(x,y)
-        msg("Touch hold end " + str(pressed_time))      
-
+    '''
+    IOS has the different version of harvest
     def harvest(self,building_filter,goods:list):
-        '''
-        新的傻瓜搬货物方法,先按住截图判断绿光探测货物目的地,再搬
-        '''
         s()
         for good in goods:
             pos_id = self.guess_good(good)
@@ -285,30 +222,97 @@ class Automator:
                 # 搬5次
                 self._move_good_by_id(good, self.pos[pos_id], times=4)
                 s()
+    '''
+    def _harvest(self):
+        if self._has_train():
+            if self._IOS:
+                pass
+            else:
+                self._Move_good_Android()
 
+    def _Move_good_Android(self):
+        ''' self._pos_good
+        按住货物，探测绿光出现的位置
+        这一段应该用numpy来实现，奈何我对numpy不熟。。。
+        '''
+        for good in self.harvest_filter:
+            pos_id = self._DeterminePos_Android(good)
+            if pos_id != 0 and pos_id in self.pos:
+                self._move_good_by_id(good, self.pos[pos_id], times = 4)
 
+    def _DeterminePos_Android(self, pos, pressed_time = 0.2):
+        screen_before = self._Sshot()
+        x,y = self._pos_good[pos]
+        x,y = (x * self.dWidth, y * self.dHeight)
+        self.d.touch.down(x,y)
+        time.sleep(pressed_time)
+        screen_after = self._Sshot()
+        self.d.touch.up(x,y)
+        diff_screens = (screen_before,screen_after)
+        result = UIMatcher.findGreenLight(diff_screens,self.pos)
+        return  result
 
+    def _move_good_by_id(self, good: int, source, times = 1):
+        try:
+            sx, sy = self._pos_good[good]
+            ex, ey = source
+            #Pout(sx,sy,ex,ey)
+            for i in range(times):
+                self._drag(sx, sy, ex, ey, 0.5)
+                s()
+        except(Exception):
+            pass
 
+    '''
+    If there is train here (Easy way just determine the color of a pixel)
+    '''
+    def _has_train(self):
+        x,y = self._btn["P_Train"]
+        screen = self._Sshot()
+        R, G, B = UIMatcher.getPixel(screen,x,y)
+        if R == 74 and G == 160 and B == 161:
+            return True
+        msg("No train (" + str(R) + "," + str(G) +"," 
+            + str(B) + ")") 
+        return False
+    '''
+    Assign each Type of items into dict for IOS
+    '''
+    def _AssignGoodsPosition(self):
+        if self._IOS:
+            for b in self._bd["pos"].values():
+                if b in CONSTANT_ITEM:
+                    self._bd["gds"][CONSTANT_ITEM[b]] = b
+        else:
+            pass
+        #print_d(self._bd["gds"])
+        print_2d(self._bd)
 
-
+    '''
+    Initiliaze building with position with their level
+    '''
     def _Initial_Building(self):
         x,y = self._btn["B_Upgrade"]
-        if not self._IOS:
-            if not self._Is_Btn_Upgrade():
-                self._tap(x,y)
+        if not self._Is_Btn_Upgrade():
+            self._tap(x,y)
 
-            for i in range(9):
-                sx, sy = self.pos[i + 1]
-                self._tap(sx,sy)
-                building = UIMatcher.orcbyArea(self._Sshot(),self._btn["R_Names"])
-                #UIMatcher.saveScreen(self._Sshot(),self._btn["R_Names"],'g',i)
-                print(building)
+        for i in range(9):
+            sx, sy = self.pos[i + 1]
+            self._tap(sx,sy)
+            building = UIMatcher.BdOrc(self._Sshot(),self._btn["R_Names"])
+            self._bd["lvl"][i + 1],self._bd["pos"][i + 1] = building.split("级")
+        
+        self._tap(x,y)    
+        if self._Is_Btn_Upgrade():
+            self._tap(x,y)
 
-            if self._Is_Btn_Upgrade():
-                self._tap(x,y)
+        #print_d(self._bd["pos"])
+        #print_d(self._bd["lvl"])
+        #print("-"*23 + "Building" + "-"*23)
 
-    
-
+    '''
+    To determine if it is in upgrade
+    '''
     def _Is_Btn_Upgrade(self):
         x,y = self._btn["B_Upgrade"]
         R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
@@ -387,4 +391,6 @@ class Automator:
     def __str__(self):
         print("="*23 + "Info" + "="*23)
         print_d(self._count)
+        Print_d(self._bd["pos"])
+        Print_d(self._bd["lvl"])
         return "="*50

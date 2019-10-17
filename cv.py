@@ -109,14 +109,12 @@ class UIMatcher:
             square = UIMatcher.getLittleSquare(img0,pos[building_ID],edge=0.1)
             buildings.append(np.mean(square))
         # 返回平均亮度最强的建筑物
-        print("Determine Green Light", buildings.index(max(buildings))+1)
         return buildings.index(max(buildings))+1
-
+    
+    '''
+    探测叉叉是否出现, 先截取叉叉所在的小方块,然后对灰度图二值化,再求平均值判断
     @staticmethod
     def detectCross(screen, th = 5):
-        '''
-        探测叉叉是否出现, 先截取叉叉所在的小方块,然后对灰度图二值化,再求平均值判断
-        '''
         screen = cv2.cvtColor(screen,cv2.COLOR_RGB2GRAY)
         good_id_list = []
         for good_id in CROSS_POSITIONS.keys():
@@ -130,14 +128,7 @@ class UIMatcher:
                 good_id_list.append(good_id)
         # print(good_id_list)
         return good_id_list
-
-    @staticmethod
-    def getPixel(img, rx, ry):
-        """
-        获取某一坐标的RGB值(灰度图会报错)
-        """
-        pixel = img[int(ry*len(img)), int(rx*len(img[0]))]
-        return pixel[2],pixel[1],pixel[0]
+    '''
 
     @staticmethod
     def getLittleSquare(img, rel_pos, edge=0.01):
@@ -154,12 +145,31 @@ class UIMatcher:
         y1 = int((ry+edge)*h)
         return img[y0:y1,x0:x1]
 
+
+
+    """
+    获取某一坐标的RGB值(灰度图会报错)
+    """
     @staticmethod
-    def BdOrc(screen,area: AREA):
+    def getPixel(img, rx, ry):
+        pixel = []
+        if type(rx) is float and type(ry) is float:
+            pixel = img[int(ry*len(img)), int(rx*len(img[0]))]
+        else:
+            pixel = img[int(ry), int(rx)]
+        return pixel[2],pixel[1],pixel[0]
+
+    '''
+    Baidu Orc
+    '''
+    @staticmethod
+    def BdOrc(screen,area: AREA,Accurate = False):
         # 定义参数变量
         options = {
           'detect_direction': 'true',
           'language_type': 'CHN_ENG',
+          "detect_language" : "true",
+          "probability" : "false"
         }
 
         cropped = screen[area.y1:area.y2, area.x1:area.x2]
@@ -168,10 +178,15 @@ class UIMatcher:
         cv2.imwrite("cropped.png", gray)
 
         # 调用通用文字识别接口
-        result = aipOcr.basicAccurate(get_file_content("cropped.png"), options)
+        result = aipOcr.basicGeneral(get_file_content("cropped.png"), options) if not Accurate else aipOcr.basicAccurate(get_file_content("cropped.png"), options)
+        result = result["words_result"]
+        if type(result) is list:
+            result = result[0]["words"]
+        return result
 
-        print(result)
-
+    '''
+    Orc by tesseract
+    '''
     @staticmethod
     def orcbyArea(screen,area: AREA):
         cropped = screen[area.y1:area.y2, area.x1:area.x2]
