@@ -136,7 +136,9 @@ class Automator:
             UIMatcher.saveScreen(img,good)
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
-                if UIMatcher.compare(img,imageB,0.5):
+                score = UIMatcher.find(img,imageB)
+                #msg("SSIM: {}  Target {}".format(score,str(target)))
+                if score > 0.35:
                     msg(str(target) + " move to " + str(goods[target]))
                     position = self.pos[goods[target]]
                     #Pout(sx,sy,ex,ey)
