@@ -136,9 +136,16 @@ class Automator:
             UIMatcher.saveScreen(img,good)
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
-                score = UIMatcher.find(img,imageB)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
-                if score > 0.35:
+                result = False
+                if good == 1 and target == TargetType.Cloth:
+                    result = UIMatcher.find(img,imageB,0.70)
+                elif target == TargetType.矿石:
+                    result = UIMatcher.find(img,imageB,0.75)
+                else:
+                    result = UIMatcher.find(img,imageB)
+                
+                if result:
                     msg(str(target) + " move to " + str(goods[target]))
                     position = self.pos[goods[target]]
                     #Pout(sx,sy,ex,ey)
@@ -157,31 +164,6 @@ class Automator:
             else:
                 self._Move_good_Android()
             self._count["harvest"] += 1
-
-    def _match_target(self, target: TargetType):
-        """
-        探测货物，并搬运货物。
-        """
-        while(True):
-            # 使用 OpenCV 探测货物。
-            result = UIMatcher.find(self._Sshot(), target)
-
-            # 若无探测到，终止对该货物的探测。
-            # 实现冗余的原因：返回的货物屏幕位置与实际位置存在偏差，导致移动失效
-            if result is None:
-                return
-
-            sx, sy = result
-            # 获取货物目的地的屏幕位置。
-            ex, ey = self.pos[self._bd["gds"][target]]
-
-            ex = ex * self.dWidth
-            ey = ey * self.dHeight
-            #Pout(sx,sy,ex,ey)
-            
-            # 搬运货物。
-            self._drag(int(sx), int(sy), int(ex) , int(ey))
-            msg("搬运货物 " + str(target))
 
     def _Move_good_Android(self):
         for good in self.harvest_filter:

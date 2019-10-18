@@ -1,3 +1,5 @@
 
 *.pyc
 Orc.py
+targets/.DS_Store
+.DS_Store

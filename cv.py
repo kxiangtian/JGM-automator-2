@@ -237,7 +237,7 @@ class UIMatcher:
 
 
     @staticmethod
-    def find(screen, target, criteria = 0.85):
+    def find(screen, target, criteria = 0.82):
         # 调用 OpenCV 模板匹配。
         res = cv2.matchTemplate(screen, target, cv2.TM_SQDIFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
