@@ -71,7 +71,7 @@ class Automator:
     def start(self):
         if DEBUG:
             #self._count['money'] = UIMatcher.orcbyArea(self._Sshot(),AREA(247,128,407,190))
-            #UIMatcher.saveScreen(self._Sshot())
+            UIMatcher.saveScreen(self._Sshot())
             #print(self.d(className="android.widget.FrameLayout", resourceId="android:id/content") \
             #.child(className="android.widget.FrameLayout")\
             #.child(className="android.view.View").info)
