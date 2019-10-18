@@ -12,6 +12,18 @@ def START(instance):
 if __name__ == '__main__':
     config = load_configure("config.json")
     
+    building = {
+        1 : "空中别墅" ,
+        2 : "人オ公寓" ,
+        3 : "钢结构房" ,
+        4 : "学校"     ,
+        5 : "菜市场"   ,
+        6 : "图书城"   ,
+        7 : "食品厂"   ,
+        8 : "造纸厂"   ,
+        9 : "钢铁厂"
+    }
+
     if MUMU and b'connected' in subprocess.check_output('adb connect '+ d.MuMu()):
         print("Successfully connected to", d.MuMu())
         config["Deivce"] = "127.0.0.1:7555"
@@ -20,7 +32,7 @@ if __name__ == '__main__':
 
     ## 启动脚本。
     if not IOSandAndroid: 
-        instance = Automator(d)
+        instance = Automator(d, building)
         instance.start()
     else:
         instance = Automator(d)

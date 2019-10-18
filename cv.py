@@ -3,6 +3,7 @@ from util import *
 from Orc import *
 from PIL import Image
 from aip import AipOcr
+from skimage.measure import compare_ssim
 import pytesseract
 import os
 
@@ -206,6 +207,10 @@ class UIMatcher:
     @staticmethod
     def saveScreen(screen,*args):
         n = len(args)
+        if n == 1 and type(args[0]) is int:
+           cv2.imwrite('s' + str(args[0]) + '.png', screen)
+           return
+
         if n >= 1 and isinstance(args[0], AREA):
             screen = screen[args[0].y1:args[0].y2, args[0].x1:args[0].x2]
         if n >= 2 and args[1] == 'g':
@@ -216,29 +221,41 @@ class UIMatcher:
                 cv2.imwrite('g.png', gray) 
         cv2.imwrite('s.png', screen)
 
+    @staticmethod
+    def compare(imageA,imageB):
+        grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+        # compute the Structural Similarity Index (SSIM) between the two
+        # images, ensuring that the difference image is returned
+        (score, diff) = compare_ssim(grayA, grayB, full=True)
+        diff = (diff * 255).astype("uint8")
+        print("SSIM: {}".format(score))
 
     @staticmethod
-    def find(screen, target, criteria = 0.15):
+    def read(path):
+        return cv2.imread(path)
+
+
+    @staticmethod
+    def find(screen, target, criteria = 0.85):
         # 获取对应货物的图片。
         # 有个要点：通过截屏制作货物图片时，请在快照为实际大小的模式下截屏。
         template = cv2.imread(target.value)
         # 获取货物图片的宽高。    
         th, tw = template.shape[:2]
-
         # 调用 OpenCV 模板匹配。
         res = cv2.matchTemplate(screen, template, cv2.TM_SQDIFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
         # 矩形左上角的位置。
         tl = min_loc
-
         # 阈值判断。
-        if min_val > criteria:
+        if criteria > 1 - min_val:
             return None
         print("-"*30,target,"-"*30)
-        print("阈值判断:",min_val,criteria)
+        print("阈值判断:",1 - min_val,criteria)
         print("坐标点:",tl[0] + tw / 2 + 15, tl[1] + th / 2 + 15)
         print("-"*70)
 
         # 这里，我随机加入了数字（15），用于补偿匹配值和真实位置的差异。
         return tl[0] + tw / 2 + 15, tl[1] + th / 2 + 15
+

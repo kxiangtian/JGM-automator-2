@@ -6,3 +6,4 @@ pillow
 pytesseract
 wda
 baidu-aip
+scikit-image

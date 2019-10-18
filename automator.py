@@ -11,7 +11,10 @@ import random
 
 
 class Automator:
-    def __init__(self, d: Devices):
+    def __init__(self, d: Devices, BUILDING = None):
+        self._DEBUG = True
+
+
         print("-"*20 + "Automator Init" + "-"*20)
         self._IOS = d.IOS()
 
@@ -40,7 +43,8 @@ class Automator:
             "lvl": {},
             "gds": {}
         }
-
+        if BUILDING is not None:
+            self._bd["pos"] = BUILDING
         # harvest_filter:list
         self.harvest_filter = d.hFL() if len(d.hFL()) <= 3 else [1,2,3]
         print("Position of goods: ",self.harvest_filter)
@@ -69,6 +73,7 @@ class Automator:
     启动脚本，请确保已进入游戏页面。
     """
     def start(self):
+        NomoreTrain = False
         n = random.randint(95,105)
         n2 = 0
 
@@ -76,7 +81,12 @@ class Automator:
         self._Initial_Building()
         self._AssignGoodsPosition()
 
-        while True:
+        #UIMatcher.saveScreen(self._Sshot())
+    
+        # Test crop the goods
+        self._Test()
+
+        while not self._DEBUG:
             if n2%n == 0:
                 print(self)
             # Check if it is in the game
@@ -86,7 +96,12 @@ class Automator:
             self._swipe()
 
             # Harvest the goods
-            self._harvest()
+            
+            if not NomoreTrain:
+                if self._No_more_train():
+                    msg("No more Train, Turn off harvest")
+                    NomoreTrain = True
+            self._harvest(NomoreTrain)
 
             # 判断是否可升级政策
             #self.check_policy()
@@ -96,129 +111,37 @@ class Automator:
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
-            #d.click(550/1080, 1650/1920)
-            #self._upgrade()
-            #self.upgrade(self.upgrade_list)
+            self.d.click(0.9, 0.99)
+            
+
             n2 += 1
 
-    def upgrade(self, upgrade_list):
-        if not len(upgrade_list):
-            return
-        self._open_upgrade_interface()
-        building,count = random.choice(upgrade_list)
-        self._upgrade_one_with_count(building,count) 
-        self._close_upgrade_interface()
 
-    def check_policy(self):
-        if not self.auto_policy:
-            return
-        # 看看政策中心那里有没有冒绿色箭头气泡
-        if len(UIMatcher.findGreenArrow(self._Sshot())):
-            # 打开政策中心
-            self.d.click(0.206, 0.097)
-            ms()
-            # 确认升级
-            self.d.click(0.077, 0.122)
-            # 拉到顶
-            self._slide_to_top()
-            # 开始找绿色箭头,找不到就往下滑,最多划5次
-            for i in range(5):
-                screen = self._Sshot()
-                arrows = UIMatcher.findGreenArrow(screen)
-                if len(arrows):
-                    x,y = arrows[0]
-                    self.d.click(x,y) # 点击这个政策
-                    s()
-                    self.d.click(0.511, 0.614) # 确认升级
-                    print("[%s] Policy upgraded.    ++++++"%time.asctime())
-                    self._back_to_main()
+    '''
+    Crop the good from specific position then compare
+    '''
+    def _Test(self):
+        for good in self.harvest_filter:
+            img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good])
+            #UIMatcher.saveScreen(img,good)
+            #imageB = cv2.imread("test2.png")
+            #UIMatcher.compare(img,imageB)
 
-                    return
-                # 如果还没出现绿色箭头，往下划
-                self.d.swipe(0.482, 0.809, 0.491, 0.516,duration = 0.3)
-            self._back_to_main()
-
-    def check_task(self):
-        if not self.auto_task:
-            return
-        # 看看任务中心有没有冒黄色气泡
-        screen = self._Sshot()
-        if UIMatcher.findTaskBubble(screen):
-            self.d.click(0.16, 0.84) # 打开城市任务
-            s()
-            self.d.click(0.51, 0.819) # 点击 完成任务
-            print("[%s] Task finished.    ++++++"%time.asctime())
-            self._back_to_main()
-
-    def _open_upgrade_interface(self):
-        screen = self._Sshot()
-        # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
-        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
-        if B > R:
-            self.d.click(1061/1080, 1369/2248)
-
-    def _close_upgrade_interface(self):
-        screen = self._Sshot()
-        # 判断升级按钮的颜色，蓝比红多就处于正常界面，反之在升级界面
-        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
-        if B < R:
-            self.d.click(1061/1080, 1369/2248)
-
-    def _upgrade_one_with_count(self,id,count):
-        sx, sy=BUILDING_POSITIONS[id]
-        self.d.click(sx, sy)
-        time.sleep(0.3)
-        for i in range(count):
-            self.d.click(859,2053)
-            # time.sleep(0.1)
-
-    def _slide_to_top(self):
-        for i in range(3):
-            self.d.swipe(0.488, 0.302,0.482, 0.822)
-            s()
-
-    def _back_to_main(self):
-        for i in range(3):
-            self.d.click(0.057, 0.919)
-            s()
-
-
-    def _tap(self,sx,sy):
-        self.d.swipe(sx, sy, sx + 1, sy + 1)
-        time.sleep(random.randint(1,5) * 0.1)
-    
-
-    def _upgrade(self):
-        #点开升级界面
-        self._tap(1045,1373)
-        screen = self._Sshot()
-        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
-        if B > R:
-            self._tap(983,1830)
-            #一次点击建筑
-            for i in range(9):
-                sx, sy = self.pos[i + 1]
-                self._tap(sx,sy)
-                self._tap(859,2053)
-        screen = self._Sshot()
-        R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
-        while (B > R):
-            screen = self._Sshot()
-            R, G, B = UIMatcher.getPixel(screen,1061/1080,1369/2248)
-            self._tap(1045,1373)
+    def _Move_good_IOS(self):
+        pass
 
     '''
     IOS has the different version of harvest
     '''
-    def _harvest(self):
-        if self._has_train():
+    def _harvest(self,NomoreTrain = False):
+        if self._has_train() and not NomoreTrain:
             msg("Found train - harvest")
             if self._IOS:
                 for target in self._bd["gds"].keys():
                     self._match_target(target)
             else:
                 self._Move_good_Android()
-                self._count["harvest"] += 1
+            self._count["harvest"] += 1
 
     def _match_target(self, target: TargetType):
         """
@@ -242,20 +165,20 @@ class Automator:
             #Pout(sx,sy,ex,ey)
             
             # 搬运货物。
-            self._drag(int(sx), int(sy), int(ex) , int(ey) )
+            self._drag(int(sx), int(sy), int(ex) , int(ey))
             msg("搬运货物 " + str(target))
 
-
     def _Move_good_Android(self):
-        ''' self._pos_good
-        按住货物，探测绿光出现的位置
-        这一段应该用numpy来实现，奈何我对numpy不熟。。。
-        '''
         for good in self.harvest_filter:
             pos_id = self._DeterminePos_Android(good)
             if pos_id != 0 and pos_id in self.pos:
                 self._move_good_by_id(good, self.pos[pos_id], times = 4)
 
+    ''' 
+    self._pos_good
+    按住货物，探测绿光出现的位置
+    这一段应该用numpy来实现，奈何我对numpy不熟。。。
+    '''
     def _DeterminePos_Android(self, pos, pressed_time = 0.2):
         screen_before = self._Sshot()
         x,y = self._pos_good[pos]
@@ -279,6 +202,17 @@ class Automator:
         except(Exception):
             pass
 
+    def _No_more_train(self):
+        x,y = self._btn["P_NoMoreTrain"]
+        screen = self._Sshot()
+        R, G, B = UIMatcher.getPixel(screen,x,y)
+        if not self._IOS and (R,G,B) == (253,237,0):
+            return True
+        elif self._IOS and (R,G,B) == (53,106,111):
+            return True
+        #msg("No More train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
+        return False
+
     '''
     If there is train here (Easy way just determine the color of a pixel)
     '''
@@ -292,38 +226,40 @@ class Automator:
             return True
         #msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
         return False
+
     '''
     Assign each Type of items into dict for IOS
     '''
     def _AssignGoodsPosition(self):
-        if self._IOS:
-            for b in self._bd["pos"].keys():
-                key = self._bd["pos"][b]
-                if key in CONSTANT_ITEM:
-                    self._bd["gds"][CONSTANT_ITEM[key]] = b
-        else:
-            pass
+        for b in self._bd["pos"].keys():
+            key = self._bd["pos"][b]
+            if key in CONSTANT_ITEM:
+                self._bd["gds"][CONSTANT_ITEM[key]] = b
         #print_d(self._bd["gds"])
-        print_2d(self._bd)
+        #print_2d(self._bd)
 
     '''
     Initiliaze building with position with their level
     '''
     def _Initial_Building(self):
-        x,y = self._btn["B_Upgrade"]
-        if not self._Is_Btn_Upgrade():
-            self._tap(x,y)
+        if self._bd["pos"] == None:
+            x,y = self._btn["B_Upgrade"]
+            if not self._Is_Btn_Upgrade():
+                self._tap(x,y)
 
-        for i in range(9):
-            sx, sy = self.pos[i + 1]
-            self._tap(sx,sy)
-            building = UIMatcher.BdOrc(self._Sshot(),self._btn["R_Names"])
-            if not building == None and type(building) is str:
-                self._bd["lvl"][i + 1],self._bd["pos"][i + 1] = building.split("级")
-        
-        self._tap(x,y)    
-        if self._Is_Btn_Upgrade():
-            self._tap(x,y)
+            for i in range(9):
+                sx, sy = self.pos[i + 1]
+                self._tap(sx,sy)
+                building = UIMatcher.BdOrc(self._Sshot(),self._btn["R_Names"])
+                if not building == None and type(building) is str:
+                    self._bd["lvl"][i + 1],self._bd["pos"][i + 1] = building.split("级")
+            
+            self._tap(x,y)    
+            if self._Is_Btn_Upgrade():
+                self._tap(x,y)
+        else:
+            for i in range(9):
+                self._bd["lvl"][i + 1] = 0
 
         #print_d(self._bd["pos"])
         #print_d(self._bd["lvl"])
@@ -406,6 +342,10 @@ class Automator:
         except(Exception):
             # wait for 10s
             s(10)
+
+    def _tap(self,sx,sy):
+        self.d.click(sx, sy)
+        time.sleep(random.randint(1,5) * 0.1)
 
     def __str__(self):
         print("="*23 + "Info" + "="*23)

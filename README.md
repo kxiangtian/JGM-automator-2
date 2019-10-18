@@ -6,9 +6,10 @@
 - [x] 转换基本配置文件
 - [x] 改写收取金币 (Android)
 - [x] 适配收取金币 (IOS)
+- [x] 改写安卓移动物品
+- [ ] IOS根据对比物品来判断位置
 
 ## 功能
-
 - [x] Print out Information Every n times
 
 ### Android
