@@ -12,6 +12,7 @@ def START(instance):
 if __name__ == '__main__':
     config = load_configure("config.json")
     
+    '''
     building = {
         1 : "空中别墅" ,
         2 : "人オ公寓" ,
@@ -22,6 +23,18 @@ if __name__ == '__main__':
         7 : "食品厂"   ,
         8 : "造纸厂"   ,
         9 : "钢铁厂"
+    }
+    '''
+    building = {
+        1 : "人オ公寓" ,
+        2 : "居民楼" ,
+        3 : "钢结构房" ,
+        4 : "服装店"     ,
+        5 : "便利店"   ,
+        6 : "菜市场"   ,
+        7 : "纺织厂"   ,
+        8 : "钢铁厂"   ,
+        9 : "食品厂"
     }
 
     if MUMU and b'connected' in subprocess.check_output('adb connect '+ d.MuMu()):

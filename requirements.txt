@@ -7,3 +7,4 @@ pytesseract
 wda
 baidu-aip
 scikit-image
+metrics

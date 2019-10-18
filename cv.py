@@ -3,9 +3,9 @@ from util import *
 from Orc import *
 from PIL import Image
 from aip import AipOcr
-from skimage.measure import compare_ssim
 import pytesseract
-import os
+import os,skimage
+from skimage.metrics import structural_similarity as ssim
 
 WIN10 = True
 tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
@@ -132,18 +132,18 @@ class UIMatcher:
     '''
 
     @staticmethod
-    def getLittleSquare(img, rel_pos, edge=0.01):
+    def getLittleSquare(img, rel_pos, edge=46):
         '''
         截取rel_pos附近一个小方块
         '''
         rx,ry = rel_pos
         h=len(img)
         w=len(img[0])
-        scale = h/w
-        x0 = int((rx-edge*scale)*w)
-        x1 = int((rx+edge*scale)*w)
-        y0 = int((ry-edge)*h)
-        y1 = int((ry+edge)*h)
+        
+        x0 = int(rx*w - edge)
+        x1 = int(rx*w + edge)
+        y0 = int(ry*h - edge)
+        y1 = int(ry*h + edge)
         return img[y0:y1,x0:x1]
 
 
@@ -222,14 +222,17 @@ class UIMatcher:
         cv2.imwrite('s.png', screen)
 
     @staticmethod
-    def compare(imageA,imageB):
+    def compare(imageA,imageB, criteria = 0.8):
         grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
         grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
         # compute the Structural Similarity Index (SSIM) between the two
         # images, ensuring that the difference image is returned
-        (score, diff) = compare_ssim(grayA, grayB, full=True)
+        (score, diff) = ssim(grayA, grayB, full=True)
         diff = (diff * 255).astype("uint8")
-        print("SSIM: {}".format(score))
+        if score > criteria:
+            msg("SSIM: {}".format(score))
+            return True
+        return False
 
     @staticmethod
     def read(path):
@@ -241,7 +244,7 @@ class UIMatcher:
         # 获取对应货物的图片。
         # 有个要点：通过截屏制作货物图片时，请在快照为实际大小的模式下截屏。
         template = cv2.imread(target.value)
-        # 获取货物图片的宽高。    
+        # 获取货物图片的宽高。
         th, tw = template.shape[:2]
         # 调用 OpenCV 模板匹配。
         res = cv2.matchTemplate(screen, template, cv2.TM_SQDIFF_NORMED)

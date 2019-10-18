@@ -5,14 +5,16 @@ from devices import *
 from constant import *
 import uiautomator2 as u2
 import wda
-import cv2 
+import numpy as np
+import cv2
 import threading
 import random
+from target import *
 
 
 class Automator:
     def __init__(self, d: Devices, BUILDING = None):
-        self._DEBUG = True
+        self._DEBUG = False
 
 
         print("-"*20 + "Automator Init" + "-"*20)
@@ -84,7 +86,7 @@ class Automator:
         #UIMatcher.saveScreen(self._Sshot())
     
         # Test crop the goods
-        self._Test()
+        # self._Test()
 
         while not self._DEBUG:
             if n2%n == 0:
@@ -111,7 +113,7 @@ class Automator:
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
-            self.d.click(0.9, 0.99)
+            #self.d.click(0.8, 0.90)
             
 
             n2 += 1
@@ -123,12 +125,24 @@ class Automator:
     def _Test(self):
         for good in self.harvest_filter:
             img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good])
-            #UIMatcher.saveScreen(img,good)
+            UIMatcher.saveScreen(img,good)
             #imageB = cv2.imread("test2.png")
             #UIMatcher.compare(img,imageB)
 
     def _Move_good_IOS(self):
-        pass
+        goods = self._bd["gds"]
+        for good in self.harvest_filter:
+            img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good])
+            UIMatcher.saveScreen(img,good)
+            for target in goods.keys():
+                imageB = cv2.imread(target.value,1)
+                if UIMatcher.compare(img,imageB,0.5):
+                    msg(str(target) + " move to " + str(goods[target]))
+                    position = self.pos[goods[target]]
+                    #Pout(sx,sy,ex,ey)
+                    self._move_good_by_id(good, position, times = 4)
+                    #self._drag(sx, sy, ex , ey,0.5)
+                    break
 
     '''
     IOS has the different version of harvest
@@ -137,8 +151,7 @@ class Automator:
         if self._has_train() and not NomoreTrain:
             msg("Found train - harvest")
             if self._IOS:
-                for target in self._bd["gds"].keys():
-                    self._match_target(target)
+                self._Move_good_IOS()
             else:
                 self._Move_good_Android()
             self._count["harvest"] += 1
