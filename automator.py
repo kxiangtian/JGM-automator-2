@@ -223,10 +223,33 @@ class Automator:
         if self._has_train():
             msg("Found train - harvest")
             if self._IOS:
-                pass
+                for target in self.targets:
+                    self._match_target(target)
             else:
                 self._Move_good_Android()
                 self._count["harvest"] += 1
+
+    def _match_target(self, target: TargetType):
+        """
+        探测货物，并搬运货物。
+        """
+        while(True):
+            # 使用 OpenCV 探测货物。
+            result = UIMatcher.find(self._Sshot(), target)
+
+            # 若无探测到，终止对该货物的探测。
+            # 实现冗余的原因：返回的货物屏幕位置与实际位置存在偏差，导致移动失效
+            if result is None:
+                return
+
+            sx, sy = result
+            # 获取货物目的地的屏幕位置。
+            ex, ey = self.pos[target]
+
+            # 搬运货物。
+            self.d.swipe(sx, sy, ex, ey)
+            msg("搬运货物 " + str(target))
+
 
     def _Move_good_Android(self):
         ''' self._pos_good
