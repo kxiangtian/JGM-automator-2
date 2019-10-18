@@ -1,7 +1,7 @@
 {
     "Deivce": "665c4235",
     
-    "IOS"	: false,
+    "IOS"	: true,
 
     "IP"	: "localhost",
 

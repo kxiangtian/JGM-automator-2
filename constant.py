@@ -24,6 +24,9 @@ CONSTANT_ITEM = {
            "中式小楼": TargetType.Quilt,
            "媒体之声": TargetType.话筒,
            "民食斋"  : TargetType.烧鸡,
-           "空中别墅": TargetType.时尚吊灯
+           "空中别墅": TargetType.时尚吊灯,
+           "服装店"  : TargetType.cloth,
+           "纺织厂"  : TargetType.cotton
+
            #"电厂":    TargetType.
 }

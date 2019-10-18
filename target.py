@@ -23,3 +23,5 @@ class TargetType(Enum):
     烧鸡 = 'targets/roastChicken.png'
     话筒 = 'targets/microphone.png'
     时尚吊灯 = 'targets/lamp.png'
+    cloth = 'targets/lamp.png'
+    cotton = 'targets/lamp.png'

@@ -42,7 +42,7 @@ class Automator:
         }
 
         # harvest_filter:list
-        self.harvest_filter = d.hFL()
+        self.harvest_filter = d.hFL() if len(d.hFL()) <= 3 else [1,2,3]
         print("Position of goods: ",self.harvest_filter)
         
         # auto_task = False
@@ -277,9 +277,10 @@ class Automator:
     '''
     def _AssignGoodsPosition(self):
         if self._IOS:
-            for b in self._bd["pos"].values():
-                if b in CONSTANT_ITEM:
-                    self._bd["gds"][CONSTANT_ITEM[b]] = b
+            for b in self._bd["pos"].keys():
+                key = self._bd["pos"][b]
+                if key in CONSTANT_ITEM:
+                    self._bd["gds"][CONSTANT_ITEM[key]] = b
         else:
             pass
         #print_d(self._bd["gds"])
