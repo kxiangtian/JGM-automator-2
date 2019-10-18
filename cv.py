@@ -180,7 +180,7 @@ class UIMatcher:
         # 调用通用文字识别接口
         result = aipOcr.basicGeneral(get_file_content("cropped.png"), options) if not Accurate else aipOcr.basicAccurate(get_file_content("cropped.png"), options)
         result = result["words_result"]
-        if type(result) is list:
+        if type(result) is list and len(result) > 0:
             result = result[0]["words"]
 
         os.remove("cropped.png")
@@ -218,7 +218,7 @@ class UIMatcher:
 
 
     @staticmethod
-    def Find(screen, target, criteria = 0.2):
+    def find(screen, target, criteria = 0.15):
         # 获取对应货物的图片。
         # 有个要点：通过截屏制作货物图片时，请在快照为实际大小的模式下截屏。
         template = cv2.imread(target.value)

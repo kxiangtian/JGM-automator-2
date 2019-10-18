@@ -8,6 +8,7 @@ CROSS_POSITIONS = { 1: (0.632, 0.878),
                     3: (991/1080, 1517/1920)}
 
 CONSTANT_ITEM = {
+           "服装店"  : TargetType.Cloth,
            "便利店"  : TargetType.Bottle,
            "钢结构房": TargetType.Sofa,
            "造纸厂"  : TargetType.Grass,
@@ -25,7 +26,6 @@ CONSTANT_ITEM = {
            "媒体之声": TargetType.话筒,
            "民食斋"  : TargetType.烧鸡,
            "空中别墅": TargetType.时尚吊灯,
-           "服装店"  : TargetType.cloth,
            "纺织厂"  : TargetType.cotton
 
            #"电厂":    TargetType.

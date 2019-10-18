@@ -69,21 +69,12 @@ class Automator:
     启动脚本，请确保已进入游戏页面。
     """
     def start(self):
-        if DEBUG:
-            #self._count['money'] = UIMatcher.orcbyArea(self._Sshot(),AREA(247,128,407,190))
-            UIMatcher.saveScreen(self._Sshot())
-            #print(self.d(className="android.widget.FrameLayout", resourceId="android:id/content") \
-            #.child(className="android.widget.FrameLayout")\
-            #.child(className="android.view.View").info)
-            pass
+        n = random.randint(95,105)
+        n2 = 0
 
         # Initial Building pos and their level
         self._Initial_Building()
-        
         self._AssignGoodsPosition()
-
-        n = random.randint(95,105)
-        n2 = 0
 
         while True:
             if n2%n == 0:
@@ -223,7 +214,7 @@ class Automator:
         if self._has_train():
             msg("Found train - harvest")
             if self._IOS:
-                for target in self.targets:
+                for target in self._bd["gds"].keys():
                     self._match_target(target)
             else:
                 self._Move_good_Android()
@@ -244,10 +235,14 @@ class Automator:
 
             sx, sy = result
             # 获取货物目的地的屏幕位置。
-            ex, ey = self.pos[target]
+            ex, ey = self.pos[self._bd["gds"][target]]
 
+            ex = ex * self.dWidth
+            ey = ey * self.dHeight
+            #Pout(sx,sy,ex,ey)
+            
             # 搬运货物。
-            self.d.swipe(sx, sy, ex, ey)
+            self._drag(int(sx), int(sy), int(ex) , int(ey) )
             msg("搬运货物 " + str(target))
 
 
@@ -291,7 +286,9 @@ class Automator:
         x,y = self._btn["P_Train"]
         screen = self._Sshot()
         R, G, B = UIMatcher.getPixel(screen,x,y)
-        if R == 74 and G == 160 and B == 161:
+        if not self._IOS and R == 74 and G == 160 and B == 161:
+            return True
+        elif self._IOS and (R,G,B) == (53,106,111):
             return True
         #msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
         return False
@@ -321,7 +318,8 @@ class Automator:
             sx, sy = self.pos[i + 1]
             self._tap(sx,sy)
             building = UIMatcher.BdOrc(self._Sshot(),self._btn["R_Names"])
-            self._bd["lvl"][i + 1],self._bd["pos"][i + 1] = building.split("级")
+            if not building == None and type(building) is str:
+                self._bd["lvl"][i + 1],self._bd["pos"][i + 1] = building.split("级")
         
         self._tap(x,y)    
         if self._Is_Btn_Upgrade():
