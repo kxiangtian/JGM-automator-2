@@ -57,8 +57,8 @@ class Automator:
         #print("自动升级政策",self.auto_policy)
 
         # upgrade_list: list
-        print("auto_upgrade the building that has the highest avenue\nif it is True")
-        print("or upgrade the number of building manually")
+        print("Auto_upgrade the building that has the highest avenue\nif it is True")
+        print("Or upgrade the number of building manually")
         self.upgrade_list = d.aU()
         print("auto_upgrade ", self.upgrade_list)
 
@@ -70,7 +70,7 @@ class Automator:
     def start(self):
         NomoreTrain = False
         n = random.randint(95,105)
-        n2 = 0
+        n2 = 1
 
         # Initial Building pos and their level
         self._Initial_Building()
@@ -86,6 +86,9 @@ class Automator:
         while True:
             if n2%n == 0:
                 print(self)
+                # 升级建筑
+                self._upgrade_building()
+                
             # Check if it is in the game
             self._runApp()
 
@@ -102,6 +105,9 @@ class Automator:
 
             # 判断是否可升级政策
             #self.check_policy()
+
+            
+            
 
             # 判断是否可完成任务
             self._check_task()
@@ -123,6 +129,33 @@ class Automator:
             #imageB = cv2.imread("test2.png")
             #UIMatcher.compare(img,imageB)
 
+
+
+    def _upgrade_building(self):
+        if self.upgrade_list == True:
+            return
+
+        if type(self.upgrade_list) is list and len(self.upgrade_list) > 0:
+            x,y = self._btn["B_Upgrade"]
+            self._tap(x,y)
+            ms()
+            for p in self.upgrade_list:
+                tx,ty = self.pos[p]
+                self._tap(tx,ty)
+                ms()
+                tx,ty = self._btn["B_Upgrade_B"]
+                self._tap(tx,ty)
+                ms()
+            ms()
+            self._tap(x,y)
+            self._count["upgrade"] += 1
+
+
+
+    '''
+    Move good (IOS version) that compare the value of picture to determine good 
+    and move to the position of relevant building
+    '''
     def _Move_good_IOS(self):
         goods = self._bd["gds"]
         for good in self.harvest_filter:
