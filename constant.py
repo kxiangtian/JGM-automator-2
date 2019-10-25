@@ -36,12 +36,16 @@ def r_color(c1,c2):
 
 
 def diff_situation(good,target):
-    if good == 1:
-        if target == TargetType.Cloth:
+    if (good == 1) and (
+        target == TargetType.Cloth or 
+        target == TargetType.电脑
+            
+        ):
             return 0.70
     elif target == TargetType.电脑:
         return 0.75
+
     elif target == TargetType.矿石:
         return 0.75
-    
+
     return 0.82

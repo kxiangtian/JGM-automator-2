@@ -423,5 +423,4 @@ class Automator:
     def __str__(self):
         print("="*23 + "Info" + "="*23)
         print_d(self._count)
-        print_2d(self._bd)
         return "="*50
