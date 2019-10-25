@@ -12,7 +12,7 @@ def START(instance):
 if __name__ == '__main__':
     config = load_configure("config.json")
     
-    '''
+    
     building = {
         1 : "空中别墅" ,
         2 : "人オ公寓" ,
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         8 : "钢铁厂"   ,
         9 : "食品厂"
     }
-
+    '''
     if MUMU and b'connected' in subprocess.check_output('adb connect '+ d.MuMu()):
         print("Successfully connected to", d.MuMu())
         config["Deivce"] = "127.0.0.1:7555"

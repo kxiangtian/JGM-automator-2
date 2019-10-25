@@ -97,12 +97,13 @@ class Devices:
 		else:
 		    # TODO get IOS size later
 		    Pout("IOS - UIKit Size: ", self._s.window_size())
-		    return self._s.scale
+		    return self._s.window_size()
 
 def Assign_Position(Ss):
 	# 各号建筑的位置
-	Pout("屏幕比例:",Ss,Ss == 3,"\nIphone X,Xs,8P,7P,6sP,6P"
-		,Ss == 2,"\nIphone 8,7,6s,6,SE")
+	Pout("屏幕比例:",Ss,Ss == (375,812),"\nIphone X,Xs"
+		,Ss == (375,667),"\nIphone 8,7,6s,6,SE"
+		,Ss == (414,736) or Ss == (375,667),"\nIphone 8P,7P,6sP,6P")
 	BUILDING_POSITIONS = dict()
 	GOODS = dict()
 	FEATURES = dict()
@@ -133,7 +134,8 @@ def Assign_Position(Ss):
 		"B_Policy" : (255/1242,228/2208),
 		"R_gold": AREA(287,56,461,116),
 		"R_Names" : AREA(339,1563,877,1635),
-		"R_Levels" : AREA(339,1688,471,1750)
+		"R_Levels" : AREA(339,1688,471,1750),
+		"B_Finish_Task":(0,0)
 		}
 	elif Ss == "18.7:9":
 		BUILDING_POSITIONS = {
@@ -162,7 +164,8 @@ def Assign_Position(Ss):
 		"B_Policy" : (221/1080,403/2248),
 		"R_gold": AREA(247,128,407,190),
 		"R_Names" : AREA(339,1680,819,1755),
-		"R_Levels" : AREA(339,1688,471,1750)
+		"R_Levels" : AREA(339,1688,471,1750),
+		"B_Finish_Task":(0,0)
 		}
 	elif Ss == 2:
 		BUILDING_POSITIONS = {
@@ -173,7 +176,7 @@ def Assign_Position(Ss):
 		FEATURES = {
 
 		}
-	elif Ss == 3:
+	elif Ss == (414,736) or Ss == (375,667):
 		BUILDING_POSITIONS = {
 		1: (297/1242, 1463/2208),
 		2: (611/1242, 1306/2208),
@@ -200,7 +203,39 @@ def Assign_Position(Ss):
 		"B_Policy" : (255/1242,228/2208),
 		"R_gold": AREA(287,56,461,116),
 		"R_Names" : AREA(339,1565,880,1650),
-		"R_Levels" : AREA(339,1565,579,1650)
+		"R_Levels" : AREA(339,1565,579,1650),
+		"B_Finish_Task":(0,0)
+		}
+
+	elif Ss == (375,812):
+		BUILDING_POSITIONS = {
+		1: (327/1125, 1460/2436),
+		2: (572/1125, 1341/2436),
+		3: (846/1125, 1197/2436),
+		4: (314/1125, 1210/2436),
+		5: (578/1125, 1071/2436),
+		6: (838/1125, 945/2436),
+		7: (321/1125, 943/2436),
+		8: (567/1125, 828/2436),
+		9: (824/1125, 687/2436)
+		}
+		GOODS = {
+		1: (684/1125,1984/2436),
+        2: (849/1125,1895/2436),
+        3: (1017/1125,1801/2436)
+		}
+		FEATURES = {
+		"P_NoMoreTrain":(0,0),
+		"P_Train": (447/1125,2025/2436),
+		"B_Upgrade" : (1092/1125,1483/2436),
+		"B_Store" : (564/1125,2258/2436),
+		"B_Build" : (56/1125,2314/2436),
+		"B_Task" : (270/1125,1888/2436),
+		"B_Policy" : (244/397,228/2436),
+		"R_gold": AREA(287,56,461,116),
+		"R_Names" : AREA(339,1565,880,1650),
+		"R_Levels" : AREA(339,1565,579,1650),
+		"B_Finish_Task":(455/1125,1854/2436)
 		}
 	else:
 		print("没有找到对应屏比对应位置")

@@ -14,7 +14,7 @@ from target import *
 
 class Automator:
     def __init__(self, d: Devices, BUILDING = None):
-        self._DEBUG = False
+        self._DEBUG = True
 
 
         print("-"*20 + "Automator Init" + "-"*20)
@@ -51,9 +51,8 @@ class Automator:
         self.harvest_filter = d.hFL() if len(d.hFL()) <= 3 else [1,2,3]
         print("Position of goods: ",self.harvest_filter)
         
-        # auto_task = False
-        #self.auto_task = d.aT()
-        #print("自动任务",self.auto_task)
+        self.auto_task = d.aT()
+        print("auto_task",self.auto_task)
 
         # auto_policy = True
         #self.auto_policy = d.aP()
@@ -86,9 +85,11 @@ class Automator:
         #UIMatcher.saveScreen(self._Sshot())
     
         # Test crop the goods
-        # self._Test()
+        if self._DEBUG:
+            #self._Test()
+            pass
 
-        while not self._DEBUG:
+        while True:
             if n2%n == 0:
                 print(self)
             # Check if it is in the game
@@ -109,7 +110,7 @@ class Automator:
             #self.check_policy()
 
             # 判断是否可完成任务
-            #self.check_task()
+            self._check_task()
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
@@ -129,22 +130,49 @@ class Automator:
             #imageB = cv2.imread("test2.png")
             #UIMatcher.compare(img,imageB)
 
+
+    def _Cross_out(self, times = 3):
+        for i in range(times):
+            p = random.randint(-5,10)
+            q = random.randint(-5,10)
+            self._tap(10 + p ,10 + q)
+
+    def _check_task(self):
+        if not self.auto_task:
+            return
+        x,y = self._btn["B_Task"]
+        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
+        if not self._IOS and (R,G,B) == (253,237,0):
+            return True
+        elif self._IOS and r_color((R,G,B),TASK_FINISH_IOS):
+            self._tap(x,y)
+            s(2)
+            x2,y2 = self._btn["B_Finish_Task"]
+            R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
+            if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
+                self._tap(x2,y2)
+                ss()
+                self._Cross_out()
+
+            elif self._DEBUG:
+                msg("Finished Task (" + str(R2) + "," + str(G2) +"," + str(B2) + ")") 
+
+
+        if self._DEBUG:
+            msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
+        return False
+
+
     def _Move_good_IOS(self):
         goods = self._bd["gds"]
         for good in self.harvest_filter:
-            img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good])
+            img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good],scale = 2)
             UIMatcher.saveScreen(img,good)
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
-                result = False
-                if good == 1 and target == TargetType.Cloth:
-                    result = UIMatcher.find(img,imageB,0.70)
-                elif target == TargetType.矿石:
-                    result = UIMatcher.find(img,imageB,0.75)
-                else:
-                    result = UIMatcher.find(img,imageB)
-                
+                result = UIMatcher.find(img,imageB,diff_situation(good,targe))
+    
                 if result:
                     msg(str(target) + " move to " + str(goods[target]))
                     position = self.pos[goods[target]]
@@ -207,7 +235,8 @@ class Automator:
             return True
         elif self._IOS and (R,G,B) == (53,106,111):
             return True
-        #msg("No More train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
+        if self._DEBUG:
+            msg("No More train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
         return False
 
     '''
@@ -219,9 +248,10 @@ class Automator:
         R, G, B = UIMatcher.getPixel(screen,x,y)
         if not self._IOS and R == 74 and G == 160 and B == 161:
             return True
-        elif self._IOS and (R,G,B) == (53,106,111):
+        elif self._IOS and (R,G,B) == TRAIN_COLOR_IOS:
             return True
-        #msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
+        if self._DEBUG:
+            msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
         return False
 
     '''

@@ -132,7 +132,7 @@ class UIMatcher:
     '''
 
     @staticmethod
-    def getLittleSquare(img, rel_pos, edge=46):
+    def getLittleSquare(img, rel_pos, edge=46,scale=1):
         '''
         截取rel_pos附近一个小方块
         '''
@@ -140,10 +140,11 @@ class UIMatcher:
         h=len(img)
         w=len(img[0])
         
-        x0 = int(rx*w - edge)
-        x1 = int(rx*w + edge)
-        y0 = int(ry*h - edge)
-        y1 = int(ry*h + edge)
+        x0 = int(rx*w - edge*scale)
+        x1 = int(rx*w + edge*scale)
+        y0 = int(ry*h - edge*scale)
+        y1 = int(ry*h + edge*scale)
+        #print("Edges",edge*scale)
         return img[y0:y1,x0:x1]
 
 
