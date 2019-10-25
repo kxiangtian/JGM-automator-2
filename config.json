@@ -11,9 +11,9 @@
 
     "Auto_policy":false,
 
-    "Auto_redpacket" : false,
+    "Auto_redpacket" : true,
 
-    "Auto_puzzle" : false,
+    "Auto_deploy" : false,
 
     "Upgrade_Building":[7],
 

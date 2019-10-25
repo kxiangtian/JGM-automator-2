@@ -26,7 +26,7 @@ class Devices:
 		self._aT = config["Auto_task"]
 		self._aP = config["Auto_policy"]
 		self._aR = config["Auto_redpacket"] 
-		self._aPz = config["Auto_puzzle"] 
+		self._adp = config["Auto_deploy"] 
 		self._uBL = config["Upgrade_Building"] #empty for all
 		self._hFL = config["Harvest_filter"] #len(0) = everything
 
@@ -45,8 +45,8 @@ class Devices:
 		else:
 			return self._uBL
 
-	def aPz(self):
-		return self._aPz
+	def adp(self):
+		return self._adp
 
 	def aR(self):
 		return self._aR
@@ -135,7 +135,8 @@ def Assign_Position(Ss):
 		"R_Levels" : AREA(339,1688,471,1750),
 		"B_Finish_Task":(0,0),
 		"B_Upgrade_B" :(0,0),
-		"B_NoMoreTrain":(0,0)
+		"B_NoMoreTrain":(0,0),
+		"P_redpacket":[(0,0),(0,0),(0,0),(0,0)]
 		}
 	elif Ss == "18.7:9":
 		BUILDING_POSITIONS = {
@@ -167,7 +168,8 @@ def Assign_Position(Ss):
 		"R_Levels" : AREA(339,1688,471,1750),
 		"B_Finish_Task":(0,0),
 		"B_Upgrade_B" :(0,0),
-		"B_NoMoreTrain":(0,0)
+		"B_NoMoreTrain":(0,0),
+		"P_redpacket":[(0,0),(0,0),(0,0),(0,0)]
 		}
 	elif Ss == 2:
 		BUILDING_POSITIONS = {
@@ -208,7 +210,8 @@ def Assign_Position(Ss):
 		"R_Levels" : AREA(339,1565,579,1650),
 		"B_Finish_Task":(0,0),
 		"B_Upgrade_B" :(0,0),
-		"B_NoMoreTrain":(0,0)
+		"B_NoMoreTrain":(0,0),
+		"P_redpacket":[(0,0),(0,0),(0,0),(0,0)]
 		}
 
 	elif Ss == (375,812):
@@ -241,7 +244,8 @@ def Assign_Position(Ss):
 		"R_Levels" : AREA(339,1565,579,1650),
 		"B_Finish_Task":(455/1125,1854/2436),
 		"B_Upgrade_B" :(894/1125,2266/2436),
-		"B_NoMoreTrain":(421/1125,1733/2436)
+		"B_NoMoreTrain":(421/1125,1733/2436),
+		"P_redpacket":[(304/1125,792/2436),(652/1125,792/2436),(1000/1125,794/2436),(650/1125,1515/2436)]
 		}
 	else:
 		print("没有找到对应屏比对应位置")

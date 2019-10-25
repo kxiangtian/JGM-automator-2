@@ -37,6 +37,7 @@ class Automator:
         self._count = {"swipe" : 0,
                         "upgrade" : 0,
                         "harvest" : 0,
+                        "red_packet": 0,
                         "money"   : 0}
         print("Initialized Counts")
 
@@ -52,7 +53,7 @@ class Automator:
         print("Position of goods: ",self.harvest_filter)
         
         self.auto_task = d.aT()
-        print("auto_task",self.auto_task)
+        print("auto_task: ",self.auto_task)
 
         #self.auto_policy = d.aP()
         #print("自动升级政策",self.auto_policy)
@@ -61,8 +62,11 @@ class Automator:
         print("Auto_upgrade the building that has the highest avenue\nif it is True")
         print("Or upgrade the number of building manually")
         self.upgrade_list = d.aU()
-        print("auto_upgrade ", self.upgrade_list)
+        print("auto_upgrade: ", self.upgrade_list)
 
+
+        self._ar = d.aR()
+        print("auto_red_packet: ", self._ar)
         print("-"*55)
     
     """
@@ -112,11 +116,11 @@ class Automator:
             # 判断是否可升级政策
             #self.check_policy()
 
-            
-            
-
             # 判断是否可完成任务
             self._check_task()
+
+            # 判断是否有可点商品
+            self._red_packet()
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下
@@ -135,6 +139,27 @@ class Automator:
             #imageB = cv2.imread("test2.png")
             #UIMatcher.compare(img,imageB)
 
+
+    def _red_packet(self):
+        if self._ar:
+            x,y = self._btn["B_Store"]
+            if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET):
+                self._tap(x,y)
+                ms()
+                x2,y2 = self._btn["B_Build"]
+                if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
+                    for px,py in self._btn["P_redpacket"]:
+                        while r_color(UIMatcher.getPixel(self._Sshot(),px,py), RED_PACKET,15):
+                            self._tap(px,py)
+                            ms()
+                            self._cross_out(10)
+                            self._count["red_packet"] += 1
+                            msg("Detected RED_PACKET, TAPS")
+            ss()
+            self._tap(x2,y2)
+            ms()
+            if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
+                self._tap(x2,y2)
 
 
     def _upgrade_building(self):
@@ -228,8 +253,7 @@ class Automator:
 
     def _No_more_train(self):
         x,y = self._btn["P_NoMoreTrain"]
-        screen = self._Sshot()
-        R, G, B = UIMatcher.getPixel(screen,x,y)
+        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
         if not self._IOS and (R,G,B) == (253,237,0):
             return True
         elif self._IOS and r_color((R,G,B),NO_MORE_TRAIN_IOS):
