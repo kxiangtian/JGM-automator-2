@@ -171,7 +171,7 @@ class Automator:
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
-                result = UIMatcher.find(img,imageB,diff_situation(good,targe))
+                result = UIMatcher.find(img,imageB,diff_situation(good,target))
     
                 if result:
                     msg(str(target) + " move to " + str(goods[target]))
