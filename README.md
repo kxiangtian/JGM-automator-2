@@ -91,10 +91,6 @@ python main.py
 ### IOS屏幕比例信息
 <img src="https://github.com/openatx/facebook-wda/raw/master/images/ios-display.png" style="zoom:40%" />
 
-## Log
-### 10/17
-- pytesseract 中文识别效果并不好 中文改换成百度ORC
-
 ## Contributors
 [jiahonzheng](https://github.com/Jiahonzheng/)
 

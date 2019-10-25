@@ -9,7 +9,7 @@ import numpy as np
 import cv2
 import threading
 import random
-import datetime
+import datetime,time
 from target import *
 
 
@@ -76,6 +76,7 @@ class Automator:
         NomoreTrain = False
         n = random.randint(95,105)
         n2 = 1
+        Start_Time = time.time()
 
         # Initial Building pos and their level
         self._Initial_Building()
@@ -101,13 +102,14 @@ class Automator:
             self._swipe()
 
             # Harvest the goods
-            
             if not NomoreTrain:
-                if self._No_more_train():
+                now = datetime.datetime.now().hour
+                #识别到没有火车的标志 或者 五分钟内 没有搬运货物 就不再检测
+                if self._No_more_train() or (round(time.time() - Start_Time) >= 300 and self._count["harvest"] == 0):
                     msg("No more Train, Turn off harvest, set NomoreTrain" +  str(NomoreTrain))
                     NomoreTrain = True
 
-            if NomoreTrain and datetime.datetime.now().hour == 9:
+            if NomoreTrain and datetime.datetime.now().hour == 9 :
                 NomoreTrain = False
                 msg("Reset NomoreTrain " +  str(NomoreTrain))
 
@@ -143,10 +145,10 @@ class Automator:
     def _red_packet(self):
         if self._ar:
             x,y = self._btn["B_Store"]
-            if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET):
+            x2,y2 = self._btn["B_Build"]
+            if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET,10):
                 self._tap(x,y)
                 ms()
-                x2,y2 = self._btn["B_Build"]
                 if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
                     for px,py in self._btn["P_redpacket"]:
                         while r_color(UIMatcher.getPixel(self._Sshot(),px,py), RED_PACKET,15):
