@@ -14,8 +14,7 @@ from target import *
 
 class Automator:
     def __init__(self, d: Devices, BUILDING = None):
-        self._DEBUG = True
-
+        self._DEBUG = False
 
         print("-"*20 + "Automator Init" + "-"*20)
         self._IOS = d.IOS()
@@ -114,7 +113,7 @@ class Automator:
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
             # 不管它出不出现，每次都点一下 确定 所在的位置
-            #self.d.click(0.8, 0.90)
+            self._cross_out()
             
 
             n2 += 1
@@ -131,7 +130,7 @@ class Automator:
             #UIMatcher.compare(img,imageB)
 
 
-    def _Cross_out(self, times = 3):
+    def _cross_out(self, times = 3):
         for i in range(times):
             p = random.randint(-5,10)
             q = random.randint(-5,10)
@@ -140,6 +139,7 @@ class Automator:
     def _check_task(self):
         if not self.auto_task:
             return
+
         x,y = self._btn["B_Task"]
         R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
         if not self._IOS and (R,G,B) == (253,237,0):
@@ -152,14 +152,17 @@ class Automator:
             if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
                 self._tap(x2,y2)
                 ss()
-                self._Cross_out()
+                self._cross_out()
 
             elif self._DEBUG:
                 msg("Finished Task (" + str(R2) + "," + str(G2) +"," + str(B2) + ")") 
 
-
         if self._DEBUG:
             msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
+
+
+        if self._count["swipe"] % 230 == 0:
+            msg("Checking the status of task")
         return False
 
 
@@ -171,7 +174,7 @@ class Automator:
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
-                result = UIMatcher.find(img,imageB,diff_situation(good,target))
+                result = UIMatcher.find(img,imageB,criteria = diff_situation(good,target))
     
                 if result:
                     msg(str(target) + " move to " + str(goods[target]))

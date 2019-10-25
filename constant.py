@@ -43,5 +43,5 @@ def diff_situation(good,target):
             return 0.78
     elif target == TargetType.矿石:
         return 0.75
-    else:
-        return 0.82
+    
+    return 0.82

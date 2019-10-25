@@ -7,9 +7,9 @@
 
     "Auto_Upgrade" : false,
 
-    "Auto_task":false,
+    "Auto_task":true,
 
-    "Auto_policy":true,
+    "Auto_policy":false,
 
     "Auto_redpacket" : false,
 
