@@ -27,9 +27,7 @@ class Devices:
 		self._aP = config["Auto_policy"]
 		self._aR = config["Auto_redpacket"] 
 		self._aPz = config["Auto_puzzle"] 
-
 		self._uBL = config["Upgrade_Building"] #empty for all
-		self._uBlL= config["Upgrade_Building_Level"] #empty for each once
 		self._hFL = config["Harvest_filter"] #len(0) = everything
 
 	def features(self):
@@ -45,7 +43,7 @@ class Devices:
 		if self._aU:
 			return True
 		else:
-			return (self._uBL,self._uBlL)
+			return self._uBL
 
 	def aPz(self):
 		return self._aPz

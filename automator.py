@@ -53,19 +53,14 @@ class Automator:
         self.auto_task = d.aT()
         print("auto_task",self.auto_task)
 
-        # auto_policy = True
         #self.auto_policy = d.aP()
         #print("自动升级政策",self.auto_policy)
 
         # upgrade_list: list
-        #self.upgrade_list = [] if d.aU() == True else d.aU()[0]
-        #print("升级列表", self.upgrade_list)
-
-
-
-        # speedup = True
-        #self.loot_speedup = False
-        #print("物资加速",self.loot_speedup)
+        print("auto_upgrade the building that has the highest avenue\nif it is True")
+        print("or upgrade the number of building manually")
+        self.upgrade_list = d.aU()
+        print("auto_upgrade ", self.upgrade_list)
 
         print("-"*55)
     
@@ -112,9 +107,8 @@ class Automator:
             self._check_task()
             
             # 简单粗暴的方式，处理 “XX之光” 的荣誉显示。
-            # 不管它出不出现，每次都点一下 确定 所在的位置
+            # 不管它出不出现，每次都点一下
             self._cross_out()
-            
 
             n2 += 1
 
@@ -128,43 +122,6 @@ class Automator:
             UIMatcher.saveScreen(img,good)
             #imageB = cv2.imread("test2.png")
             #UIMatcher.compare(img,imageB)
-
-
-    def _cross_out(self, times = 3):
-        for i in range(times):
-            p = random.randint(-5,10)
-            q = random.randint(-5,10)
-            self._tap(10 + p ,10 + q)
-
-    def _check_task(self):
-        if not self.auto_task:
-            return
-
-        x,y = self._btn["B_Task"]
-        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
-        if not self._IOS and (R,G,B) == (253,237,0):
-            return True
-        elif self._IOS and r_color((R,G,B),TASK_FINISH_IOS):
-            self._tap(x,y)
-            s(2)
-            x2,y2 = self._btn["B_Finish_Task"]
-            R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
-            if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
-                self._tap(x2,y2)
-                ss()
-                self._cross_out()
-
-            elif self._DEBUG:
-                msg("Finished Task (" + str(R2) + "," + str(G2) +"," + str(B2) + ")") 
-
-        if self._DEBUG:
-            msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
-
-
-        if self._count["swipe"] % 230 == 0:
-            msg("Checking the status of task")
-        return False
-
 
     def _Move_good_IOS(self):
         goods = self._bd["gds"]
@@ -376,6 +333,48 @@ class Automator:
     def _tap(self,sx,sy):
         self.d.click(sx, sy)
         time.sleep(random.randint(1,5) * 0.1)
+
+    '''
+    Tap at top left of the screen to solve xx之光 and cross out the msg
+    '''
+    def _cross_out(self, times = 3):
+        for i in range(times):
+            p = random.randint(-5,10)
+            q = random.randint(-5,10)
+            self._tap(10 + p ,10 + q)
+
+    '''
+    if the auto_task is not enable, it will return
+    else it will check complete if it pops out, and perform the auto task.
+    '''
+    def _check_task(self):
+        if not self.auto_task:
+            return
+
+        x,y = self._btn["B_Task"]
+        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
+        if not self._IOS and (R,G,B) == (253,237,0):
+            return True
+        elif self._IOS and r_color((R,G,B),TASK_FINISH_IOS):
+            self._tap(x,y)
+            s(2)
+            x2,y2 = self._btn["B_Finish_Task"]
+            R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
+            if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
+                self._tap(x2,y2)
+                ss()
+                self._cross_out()
+
+            elif self._DEBUG:
+                msg("Finished Task (" + str(R2) + "," + str(G2) +"," + str(B2) + ")") 
+
+        if self._DEBUG:
+            msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
+
+
+        if self._count["swipe"] % 230 == 0:
+            msg("Checking the status of task")
+        return False
 
     def __str__(self):
         print("="*23 + "Info" + "="*23)
