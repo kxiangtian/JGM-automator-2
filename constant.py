@@ -39,8 +39,8 @@ def diff_situation(good,target):
     if good == 1:
         if target == TargetType.Cloth:
             return 0.70
-        if target == TargetType.电脑:
-            return 0.78
+    elif target == TargetType.电脑:
+        return 0.78
     elif target == TargetType.矿石:
         return 0.75
     
