@@ -134,7 +134,8 @@ def Assign_Position(Ss):
 		"R_Names" : AREA(339,1563,877,1635),
 		"R_Levels" : AREA(339,1688,471,1750),
 		"B_Finish_Task":(0,0),
-		"B_Upgrade_B" :(0,0)
+		"B_Upgrade_B" :(0,0),
+		"B_NoMoreTrain":(0,0)
 		}
 	elif Ss == "18.7:9":
 		BUILDING_POSITIONS = {
@@ -165,7 +166,8 @@ def Assign_Position(Ss):
 		"R_Names" : AREA(339,1680,819,1755),
 		"R_Levels" : AREA(339,1688,471,1750),
 		"B_Finish_Task":(0,0),
-		"B_Upgrade_B" :(0,0)
+		"B_Upgrade_B" :(0,0),
+		"B_NoMoreTrain":(0,0)
 		}
 	elif Ss == 2:
 		BUILDING_POSITIONS = {
@@ -205,7 +207,8 @@ def Assign_Position(Ss):
 		"R_Names" : AREA(339,1565,880,1650),
 		"R_Levels" : AREA(339,1565,579,1650),
 		"B_Finish_Task":(0,0),
-		"B_Upgrade_B" :(0,0)
+		"B_Upgrade_B" :(0,0),
+		"B_NoMoreTrain":(0,0)
 		}
 
 	elif Ss == (375,812):
@@ -226,7 +229,7 @@ def Assign_Position(Ss):
         3: (1017/1125,1801/2436)
 		}
 		FEATURES = {
-		"P_NoMoreTrain":(0,0),
+		"P_NoMoreTrain":(550/1125,1867/2436),
 		"P_Train": (447/1125,2025/2436),
 		"B_Upgrade" : (1092/1125,1483/2436),
 		"B_Store" : (564/1125,2258/2436),
@@ -237,7 +240,8 @@ def Assign_Position(Ss):
 		"R_Names" : AREA(339,1565,880,1650),
 		"R_Levels" : AREA(339,1565,579,1650),
 		"B_Finish_Task":(455/1125,1854/2436),
-		"B_Upgrade_B" :(894/1125,2266/2436)
+		"B_Upgrade_B" :(894/1125,2266/2436),
+		"B_NoMoreTrain":(421/1125,1733/2436)
 		}
 	else:
 		print("没有找到对应屏比对应位置")

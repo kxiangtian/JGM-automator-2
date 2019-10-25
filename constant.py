@@ -28,8 +28,8 @@ CONSTANT_ITEM = {
 
 TRAIN_COLOR_IOS = (144,147,180)
 TASK_FINISH_IOS = (255,192,58)
-TASK_B_FINISH_IOS =(254,211,44)
-
+TASK_B_FINISH_IOS = (254,211,44)
+NO_MORE_TRAIN_IOS = (252,231,2)
 
 def r_color(c1,c2):
     return abs(c1[0] - c2[0]) <= 5 and abs(c1[1] - c2[1])  <= 5 and abs(c1[1] - c2[1]) <= 5
@@ -40,7 +40,7 @@ def diff_situation(good,target):
         if target == TargetType.Cloth:
             return 0.70
     elif target == TargetType.电脑:
-        return 0.78
+        return 0.75
     elif target == TargetType.矿石:
         return 0.75
     

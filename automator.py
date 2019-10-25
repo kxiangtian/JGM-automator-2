@@ -9,6 +9,7 @@ import numpy as np
 import cv2
 import threading
 import random
+import datetime
 from target import *
 
 
@@ -99,8 +100,13 @@ class Automator:
             
             if not NomoreTrain:
                 if self._No_more_train():
-                    msg("No more Train, Turn off harvest")
+                    msg("No more Train, Turn off harvest, set NomoreTrain" +  str(NomoreTrain))
                     NomoreTrain = True
+
+            if NomoreTrain and datetime.datetime.now().hour == 9:
+                NomoreTrain = False
+                msg("Reset NomoreTrain " +  str(NomoreTrain))
+
             self._harvest(NomoreTrain)
 
             # 判断是否可升级政策
@@ -226,7 +232,12 @@ class Automator:
         R, G, B = UIMatcher.getPixel(screen,x,y)
         if not self._IOS and (R,G,B) == (253,237,0):
             return True
-        elif self._IOS and (R,G,B) == (53,106,111):
+        elif self._IOS and r_color((R,G,B),NO_MORE_TRAIN_IOS):
+            self._tap(x,y)
+            ms()
+            x2,y2 = self._btn["B_NoMoreTrain"]
+            self._tap(x2,y2)
+            ms()
             return True
         if self._DEBUG:
             msg("No More train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
