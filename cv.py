@@ -107,7 +107,7 @@ class UIMatcher:
         # plt.show()
         buildings = []
         for building_ID in range(1,10):
-            square = UIMatcher.getLittleSquare(img0,pos[building_ID],edge=0.1)
+            square = UIMatcher.getLittleSquare(img0,pos[building_ID])
             buildings.append(np.mean(square))
         # 返回平均亮度最强的建筑物
         return buildings.index(max(buildings))+1
@@ -208,7 +208,7 @@ class UIMatcher:
     @staticmethod
     def saveScreen(screen,*args):
         n = len(args)
-        if n == 1 and type(args[0]) is int:
+        if n == 1 and (type(args[0]) is int or type(args[0]) is str):
            cv2.imwrite('s' + str(args[0]) + '.png', screen)
            return
 

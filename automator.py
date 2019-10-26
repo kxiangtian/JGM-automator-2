@@ -15,7 +15,7 @@ from target import *
 
 class Automator:
     def __init__(self, d: Devices, BUILDING = None):
-        self._DEBUG = False
+        self._DEBUG = True
 
         print("-"*20 + "Automator Init" + "-"*20)
         self._IOS = d.IOS()
@@ -267,6 +267,7 @@ class Automator:
             return True
         if self._DEBUG:
             msg("No More train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
+            UIMatcher.saveScreen(self._Sshot(),"No_more_train")
         return False
 
     '''
@@ -276,12 +277,11 @@ class Automator:
         x,y = self._btn["P_Train"]
         screen = self._Sshot()
         R, G, B = UIMatcher.getPixel(screen,x,y)
-        if not self._IOS and R == 74 and G == 160 and B == 161:
-            return True
-        elif self._IOS and (R,G,B) == TRAIN_COLOR_IOS:
+        if r_color( (R,G,B),TRAIN_COLOR_IOS,diff = 10):
             return True
         if self._DEBUG:
             msg("No train (" + str(R) + "," + str(G) +"," + str(B) + ")") 
+            UIMatcher.saveScreen(self._Sshot(),"has_train")
         return False
 
     '''
