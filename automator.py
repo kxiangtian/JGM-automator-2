@@ -194,6 +194,7 @@ class Automator:
         for good in self.harvest_filter:
             img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good],scale = 2)
             UIMatcher.saveScreen(img,good)
+            
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
@@ -206,6 +207,9 @@ class Automator:
                     self._move_good_by_id(good, position, times = 4)
                     #self._drag(sx, sy, ex , ey,0.5)
                     break
+
+            if not self._DEBUG:
+                os.remove("s"+str(good)+".png")
 
     '''
     IOS has the different version of harvest
