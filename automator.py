@@ -194,7 +194,7 @@ class Automator:
         for good in self.harvest_filter:
             img = UIMatcher.getLittleSquare(self._Sshot(),self._pos_good[good],scale = 2)
             UIMatcher.saveScreen(img,good)
-            
+
             for target in goods.keys():
                 imageB = cv2.imread(target.value,1)
                 #msg("SSIM: {}  Target {}".format(score,str(target)))
@@ -215,7 +215,10 @@ class Automator:
     IOS has the different version of harvest
     '''
     def _harvest(self,NomoreTrain = False):
-        if self._has_train() and not NomoreTrain:
+        if NomoreTrain:
+            return
+            
+        if self._has_train():
             msg("Found train - harvest")
             if self._IOS:
                 self._Move_good_IOS()
@@ -260,9 +263,7 @@ class Automator:
     def _No_more_train(self):
         x,y = self._btn["P_NoMoreTrain"]
         R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
-        if not self._IOS and (R,G,B) == (253,237,0):
-            return True
-        elif self._IOS and r_color((R,G,B),NO_MORE_TRAIN_IOS):
+        if r_color((R,G,B),NO_MORE_TRAIN_IOS) or r_color(B,0):
             self._tap(x,y)
             ms()
             x2,y2 = self._btn["B_NoMoreTrain"]
