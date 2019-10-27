@@ -148,7 +148,7 @@ class Automator:
             x2,y2 = self._btn["B_Build"]
             if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET,10):
                 self._tap(x,y)
-                msg("RED_PACKET " + str(x) +"," + str(y) ) 
+                #msg("RED_PACKET " + str(x) +"," + str(y) ) 
                 ms()
                 if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
                     for px,py in self._btn["P_redpacket"]:
