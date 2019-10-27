@@ -86,7 +86,7 @@ class Automator:
         # Test crop the goods
         if self._DEBUG:
             #self._Test()
-            #UIMatcher.saveScreen(self._Sshot())
+            UIMatcher.saveScreen(self._Sshot())
             pass
 
         while True:
@@ -437,9 +437,7 @@ class Automator:
 
         x,y = self._btn["B_Task"]
         R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
-        if not self._IOS and (R,G,B) == (253,237,0):
-            return True
-        elif self._IOS and r_color((R,G,B),TASK_FINISH_IOS):
+        if r_color((R,G,B),TASK_FINISH_IOS):
             self._tap(x,y)
             s(2)
             x2,y2 = self._btn["B_Finish_Task"]
