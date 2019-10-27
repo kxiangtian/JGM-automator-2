@@ -82,11 +82,11 @@ class Automator:
         self._Initial_Building()
         self._AssignGoodsPosition()
 
-        #UIMatcher.saveScreen(self._Sshot())
     
         # Test crop the goods
         if self._DEBUG:
             #self._Test()
+            #UIMatcher.saveScreen(self._Sshot())
             pass
 
         while True:
@@ -148,6 +148,7 @@ class Automator:
             x2,y2 = self._btn["B_Build"]
             if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET,10):
                 self._tap(x,y)
+                msg("RED_PACKET " + str(x) +"," + str(y) ) 
                 ms()
                 if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
                     for px,py in self._btn["P_redpacket"]:
@@ -157,6 +158,8 @@ class Automator:
                             self._cross_out(10)
                             self._count["red_packet"] += 1
                             msg("Detected RED_PACKET, TAPS")
+            elif self._DEBUG:
+                UIMatcher.saveScreen(self._Sshot(),"RED_PACKET")
             ss()
             self._tap(x2,y2)
             ms()
@@ -217,7 +220,7 @@ class Automator:
     def _harvest(self,NomoreTrain = False):
         if NomoreTrain:
             return
-            
+
         if self._has_train():
             msg("Found train - harvest")
             if self._IOS:
@@ -406,7 +409,10 @@ class Automator:
             s(10)
 
     def _tap(self,sx,sy):
-        self.d.click(sx, sy)
+        if self._IOS:
+            self.d.click(sx, sy)
+        else:
+            self.d.swipe(sx, sy, sx, sy)
         time.sleep(random.randint(1,5) * 0.1)
 
     '''
@@ -416,7 +422,10 @@ class Automator:
         for i in range(times):
             p = random.randint(-5,10)
             q = random.randint(-5,10)
-            self._tap(10 + p ,10 + q)
+            if self._IOS:
+                self._tap(10 + p ,10 + q)
+            else:
+                self._tap(58/1080,296/2248)
 
     '''
     if the auto_task is not enable, it will return
@@ -445,6 +454,7 @@ class Automator:
 
         if self._DEBUG:
             msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
+            UIMatcher.saveScreen(self._Sshot(),"Finished")
 
 
         if self._count["swipe"] % 230 == 0:
