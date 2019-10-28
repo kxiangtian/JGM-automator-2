@@ -4,3 +4,7 @@ uiautomator2
 imutils
 pillow
 pytesseract
+wda
+baidu-aip
+scikit-image
+metrics
