@@ -148,7 +148,7 @@ class Automator:
             x2,y2 = self._btn["B_Build"]
             if r_color(UIMatcher.getPixel(self._Sshot(),x,y) , RED_PACKET,10):
                 self._tap(x,y)
-                #msg("RED_PACKET " + str(x) +"," + str(y) ) 
+
                 ms()
                 if r_color(UIMatcher.getPixel(self._Sshot(),x2,y2), BLUE_MENU):
                     for px,py in self._btn["P_redpacket"]:
@@ -158,6 +158,9 @@ class Automator:
                             self._cross_out(10)
                             self._count["red_packet"] += 1
                             msg("Detected RED_PACKET, TAPS")
+                elif self._DEBUG:
+                    msg("RED_PACKET " + str(x) +"," + str(y) ) 
+
             elif self._DEBUG:
                 UIMatcher.saveScreen(self._Sshot(),"RED_PACKET")
             ss()
@@ -441,15 +444,15 @@ class Automator:
         self._tap(x,y)
         s(2)
         x2,y2 = self._btn["B_Finish_Task"]
-        R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
-        if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
+        R, G, B = UIMatcher.getPixel(self._Sshot(),x2,y2)
+        if r_color((R,G,B),TASK_B_FINISH_IOS):
             self._tap(x2,y2)
             ss()
-            self._cross_out()
             if self._DEBUG:
                 msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
                 UIMatcher.saveScreen(self._Sshot(),"Finished")
-        
+
+        self._cross_out()
         return False
 
     def __str__(self):
