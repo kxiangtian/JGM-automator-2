@@ -12,9 +12,9 @@ def START(instance):
 if __name__ == '__main__':
     config = load_configure("config.json")
     
-    
+    #空中别墅
     building = {
-        1 : "空中别墅" ,
+        1 : "中式小楼" ,
         2 : "人オ公寓" ,
         3 : "钢结构房" ,
         4 : "学校"     ,

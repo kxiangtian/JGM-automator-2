@@ -266,7 +266,7 @@ class Automator:
     def _No_more_train(self):
         x,y = self._btn["P_NoMoreTrain"]
         R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
-        if r_color((R,G,B),NO_MORE_TRAIN_IOS) or r_color(B,0):
+        if r_color((R,G,B),NO_MORE_TRAIN_IOS):
             self._tap(x,y)
             ms()
             x2,y2 = self._btn["B_NoMoreTrain"]
@@ -342,9 +342,12 @@ class Automator:
             return True
 
     def _tap(self,sx,sy):
-        self.d.click(sx, sy)
-        time.sleep(random.randint(1,5) * 0.1)
-
+        try:
+            self.d.click(sx, sy)
+            time.sleep(random.randint(1,5) * 0.1)
+        except(Exception):
+            # wait for 5s
+            s(5)
     """
     Screen shot compatiable Version for both IOS and Android
     """
@@ -434,29 +437,19 @@ class Automator:
     def _check_task(self):
         if not self.auto_task:
             return
-
         x,y = self._btn["B_Task"]
-        R, G, B = UIMatcher.getPixel(self._Sshot(),x,y)
-        if r_color((R,G,B),TASK_FINISH_IOS):
-            self._tap(x,y)
-            s(2)
-            x2,y2 = self._btn["B_Finish_Task"]
-            R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
-            if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
-                self._tap(x2,y2)
-                ss()
-                self._cross_out()
-
-            elif self._DEBUG:
-                msg("Finished Task (" + str(R2) + "," + str(G2) +"," + str(B2) + ")") 
-
-        if self._DEBUG:
-            msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
-            UIMatcher.saveScreen(self._Sshot(),"Finished")
-
-
-        if self._count["swipe"] % 230 == 0:
-            msg("Checking the status of task")
+        self._tap(x,y)
+        s(2)
+        x2,y2 = self._btn["B_Finish_Task"]
+        R2, G2, B2 = UIMatcher.getPixel(self._Sshot(),x2,y2)
+        if r_color((R2,G2,B2),TASK_B_FINISH_IOS):
+            self._tap(x2,y2)
+            ss()
+            self._cross_out()
+            if self._DEBUG:
+                msg("Task Finished Color(" + str(R) + "," + str(G) +"," + str(B) + ")") 
+                UIMatcher.saveScreen(self._Sshot(),"Finished")
+        
         return False
 
     def __str__(self):
