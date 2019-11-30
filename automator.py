@@ -15,7 +15,7 @@ from target import *
 
 class Automator:
     def __init__(self, d: Devices, BUILDING = None):
-        self._DEBUG = True
+        self._DEBUG = False
 
         print("-"*20 + "Automator Init" + "-"*20)
         self._IOS = d.IOS()
